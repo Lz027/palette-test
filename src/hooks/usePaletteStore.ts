@@ -8,6 +8,8 @@ const defaultSettings: UserSettings = {
   claudeKey: '',
   geminiKey: '',
   aiEnabled: false,
+  supabaseUrl: '',
+  supabaseAnonKey: '',
 };
 
 const initialState: PaletteState = {

@@ -12,7 +12,8 @@ import {
   Eye, 
   EyeOff,
   AlertTriangle,
-  Info
+  Info,
+  Database
 } from 'lucide-react';
 import { BottomNav } from '@/components/BottomNav';
 import { usePalette } from '@/contexts/PaletteContext';
@@ -35,6 +36,7 @@ const Settings = () => {
   const [showOpenAI, setShowOpenAI] = useState(false);
   const [showClaude, setShowClaude] = useState(false);
   const [showGemini, setShowGemini] = useState(false);
+  const [showSupabaseKey, setShowSupabaseKey] = useState(false);
 
   const handleExport = () => {
     const data = exportData();
@@ -63,22 +65,72 @@ const Settings = () => {
       </header>
 
       <main className="px-4 py-5 space-y-6">
+        {/* Supabase Section */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <Database className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Cloud Sync (Supabase)</h2>
+          </div>
+          
+          <Card className="p-4 space-y-4">
+            <div className="flex items-start gap-2 p-3 bg-indigo-500/5 border border-indigo-500/10 rounded-lg">
+              <Info className="h-4 w-4 text-indigo-500 mt-0.5 shrink-0" />
+              <p className="text-xs text-muted-foreground">
+                Connect your own Supabase project to sync your data across devices. 
+                Data will be stored in your private database.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="supabase-url">Supabase Project URL</Label>
+              <Input
+                id="supabase-url"
+                value={settings.supabaseUrl}
+                onChange={(e) => updateSettings({ supabaseUrl: e.target.value })}
+                placeholder="https://xyz.supabase.co"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="supabase-key">Supabase Anon Key</Label>
+              <div className="relative">
+                <Input
+                  id="supabase-key"
+                  type={showSupabaseKey ? 'text' : 'password'}
+                  value={settings.supabaseAnonKey}
+                  onChange={(e) => updateSettings({ supabaseAnonKey: e.target.value })}
+                  placeholder="eyJhbGciOiJIUzI1Ni..."
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3"
+                  onClick={() => setShowSupabaseKey(!showSupabaseKey)}
+                >
+                  {showSupabaseKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            <Button 
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+              disabled={!settings.supabaseUrl || !settings.supabaseAnonKey}
+            >
+              Connect to Supabase
+            </Button>
+          </Card>
+        </section>
+
         {/* API Keys Section */}
         <section>
           <div className="flex items-center gap-2 mb-4">
             <Key className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold">API Keys</h2>
+            <h2 className="text-lg font-semibold">AI API Keys</h2>
           </div>
           
           <Card className="p-4 space-y-4">
-            <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
-              <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-              <p className="text-xs text-muted-foreground">
-                API keys are stored locally on your device. They're used directly for AI features
-                and are never sent to our servers.
-              </p>
-            </div>
-
             {/* OpenAI */}
             <div className="space-y-2">
               <Label htmlFor="openai-key">OpenAI API Key</Label>
@@ -203,10 +255,12 @@ const Settings = () => {
                     <AlertTriangle className="h-5 w-5 text-destructive" />
                     Clear All Data?
                   </AlertDialogTitle>
+                  <AlertDialogHeader>
                   <AlertDialogDescription>
                     This will permanently delete all your boards, tasks, and settings.
                     This action cannot be undone.
                   </AlertDialogDescription>
+                  </AlertDialogHeader>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>

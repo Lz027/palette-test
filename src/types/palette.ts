@@ -41,6 +41,8 @@ export interface UserSettings {
   claudeKey: string;
   geminiKey: string;
   aiEnabled: boolean;
+  supabaseUrl: string;
+  supabaseAnonKey: string;
 }
 
 export interface PaletteState {
