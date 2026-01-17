@@ -1,27 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Using provided keys directly as requested
+// Project Ref: mmmfebmyxmcyirncalqw
+const supabaseUrl = 'https://mmmfebmyxmcyirncalqw.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tbWZlYm15eG1jeWlybmNhbHF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2NDA4OTYsImV4cCI6MjA4NDIxNjg5Nn0.sKao5Ot3wzqOhjLooVEZasxkryDGwEfajq9Ja9FdIK4';
 
-// Initialize with empty strings if missing to prevent crash, 
-// but the app will show configuration error via ErrorBoundary or UI checks
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
-  supabaseAnonKey || 'placeholder'
-);
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase credentials missing from environment variables. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
-}
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const getSupabaseClient = (url?: string, anonKey?: string) => {
   const targetUrl = url || supabaseUrl;
   const targetKey = anonKey || supabaseAnonKey;
-  
-  if (!targetUrl || !targetKey) {
-    console.error('Cannot initialize Supabase client: Missing URL or Key');
-    return supabase;
-  }
   
   try {
     return createClient(targetUrl, targetKey);
