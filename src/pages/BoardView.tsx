@@ -1,241 +1,89 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ArrowLeft, Plus, Sparkles, LayoutGrid, Table as TableIcon } from 'lucide-react';
-import { Column } from '@/components/Column';
-import { TableView } from '@/components/TableView';
 import { usePalette } from '@/contexts/PaletteContext';
-import {
-  DndContext,
-  DragOverlay,
-  closestCorners,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  DragStartEvent,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { TaskCard } from '@/components/TaskCard';
-import { cn } from '@/lib/utils';
-
-type ViewMode = 'table' | 'kanban';
+import { BoardViewHeader } from '@/components/BoardViewHeader';
+import { KanbanView } from '@/components/KanbanView';
+import { TableView } from '@/components/TableView';
+import { useState, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LayoutGrid, List } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const BoardView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { boards, getBoardColumns, getColumnTasks, createColumn, moveTask, tasks, hasAiKeys } = usePalette();
-  
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
-  const [isAddingColumn, setIsAddingColumn] = useState(false);
-  const [newColumnName, setNewColumnName] = useState('');
-  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+  const { boards, getBoardColumns, getColumnTasks, openBoard } = usePalette();
+  const [view, setView] = useState<'kanban' | 'table'>('kanban');
 
   const board = boards.find(b => b.id === id);
-  const columns = getBoardColumns(id || '');
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 200, tolerance: 8 },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const activeTask = useMemo(() => {
-    if (!activeTaskId) return null;
-    return tasks.find(t => t.id === activeTaskId) || null;
-  }, [activeTaskId, tasks]);
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveTaskId(event.active.id as string);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    setActiveTaskId(null);
-
-    if (!over) return;
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-
-    // Find the task being dragged
-    const draggedTask = tasks.find(t => t.id === activeId);
-    if (!draggedTask) return;
-
-    // Check if dropped on a column
-    const targetColumn = columns.find(c => c.id === overId);
-    if (targetColumn) {
-      const columnTasks = getColumnTasks(targetColumn.id);
-      moveTask(activeId, targetColumn.id, columnTasks.length);
-      return;
+  useEffect(() => {
+    if (id) {
+      openBoard(id);
     }
-
-    // Check if dropped on another task
-    const targetTask = tasks.find(t => t.id === overId);
-    if (targetTask && targetTask.columnId !== draggedTask.columnId) {
-      moveTask(activeId, targetTask.columnId, targetTask.position);
-    }
-  };
-
-  const handleAddColumn = () => {
-    if (newColumnName.trim() && id) {
-      createColumn(id, newColumnName.trim());
-      setNewColumnName('');
-      setIsAddingColumn(false);
-    }
-  };
+  }, [id, openBoard]);
 
   if (!board) {
     return (
-      <div className="min-h-screen flex items-center justify-center animate-fade-in">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Board not found</h2>
-          <Button onClick={() => navigate('/')}>Go Home</Button>
-        </div>
+      <div className="flex flex-col items-center justify-center h-screen bg-background">
+        <h2 className="text-2xl font-bold mb-4">Board not found</h2>
+        <button 
+          onClick={() => navigate('/')}
+          className="text-primary hover:underline"
+        >
+          Back to Dashboard
+        </button>
       </div>
     );
   }
 
+  const columns = getBoardColumns(board.id);
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="px-4 py-4 border-b border-border/50 flex items-center gap-3 animate-fade-in">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={() => navigate('/')}
-          className="shrink-0 hover:scale-105 transition-transform"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-lg font-semibold truncate flex-1">{board.name}</h1>
-        
-        {/* View Mode Toggle */}
-        <div className="flex items-center bg-muted/50 rounded-lg p-1">
-          <Button
-            variant={viewMode === 'table' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('table')}
-            className={cn(
-              "h-8 px-3 transition-all duration-200",
-              viewMode === 'table' && "shadow-sm"
-            )}
-          >
-            <TableIcon className="h-4 w-4 mr-1.5" />
-            Table
-          </Button>
-          <Button
-            variant={viewMode === 'kanban' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('kanban')}
-            className={cn(
-              "h-8 px-3 transition-all duration-200",
-              viewMode === 'kanban' && "shadow-sm"
-            )}
-          >
-            <LayoutGrid className="h-4 w-4 mr-1.5" />
-            Board
-          </Button>
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.02 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="h-screen flex flex-col bg-background overflow-hidden"
+    >
+      <BoardViewHeader board={board} />
+      
+      <main className="flex-1 overflow-hidden p-4 sm:p-6 lg:p-8">
+        <div className="max-w-[1600px] mx-auto h-full flex flex-col space-y-6">
+          <div className="flex items-center justify-between">
+            <Tabs value={view} onValueChange={(v) => setView(v as 'kanban' | 'table')} className="w-fit">
+              <TabsList className="bg-muted/50 p-1">
+                <TabsTrigger value="kanban" className="data-[state=active]:bg-background">
+                  <LayoutGrid className="w-4 h-4 mr-2" />
+                  Board
+                </TabsTrigger>
+                <TabsTrigger value="table" className="data-[state=active]:bg-background">
+                  <List className="w-4 h-4 mr-2" />
+                  Table
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={view}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="flex-1 overflow-hidden"
+            >
+              {view === 'kanban' ? (
+                <KanbanView columns={columns} getColumnTasks={getColumnTasks} />
+              ) : (
+                <TableView columns={columns} getColumnTasks={getColumnTasks} />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
-
-        {hasAiKeys && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-primary border-primary/30 hover:bg-primary/10 transition-all duration-200 hover:scale-105"
-          >
-            <Sparkles className="h-4 w-4 mr-1" />
-            Ask Pal
-          </Button>
-        )}
-      </header>
-
-      {/* Content */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex-1 overflow-auto p-4">
-          {viewMode === 'table' ? (
-            <TableView 
-              columns={columns} 
-              getColumnTasks={getColumnTasks}
-            />
-          ) : (
-            /* Kanban View */
-            <div className="flex gap-4 h-full pb-4 animate-fade-in">
-              {columns.map(column => (
-                <Column
-                  key={column.id}
-                  column={column}
-                  tasks={getColumnTasks(column.id)}
-                />
-              ))}
-              
-              {/* Add Column */}
-              <div className="flex-shrink-0 w-72">
-                {isAddingColumn ? (
-                  <div className="bg-muted/30 rounded-lg p-3 space-y-2 animate-scale-in">
-                    <Input
-                      value={newColumnName}
-                      onChange={(e) => setNewColumnName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAddColumn();
-                        if (e.key === 'Escape') {
-                          setNewColumnName('');
-                          setIsAddingColumn(false);
-                        }
-                      }}
-                      placeholder="Column name..."
-                      autoFocus
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={handleAddColumn} className="flex-1">
-                        Add
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => {
-                          setNewColumnName('');
-                          setIsAddingColumn(false);
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <Button
-                    variant="outline"
-                    className="w-full h-12 border-dashed border-2 text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-200"
-                    onClick={() => setIsAddingColumn(true)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Column
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <DragOverlay>
-          {activeTask ? <TaskCard task={activeTask} /> : null}
-        </DragOverlay>
-      </DndContext>
-    </div>
+      </main>
+    </motion.div>
   );
 };
 

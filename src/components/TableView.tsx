@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, MoreVertical, Trash2 } from 'lucide-react';
+import { Plus, Settings2, Trash2, Type, Hash, Calendar, CheckSquare, Link as LinkIcon, List, Tag, Sparkles } from 'lucide-react';
 import { Column as ColumnType, Task } from '@/types/palette';
 import { TableRow } from './TableRow';
 import { usePalette } from '@/contexts/PaletteContext';
@@ -10,12 +10,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
   Table,
   TableBody,
   TableHead,
@@ -23,16 +17,19 @@ import {
   TableRow as UITableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { ColumnEditor } from './ColumnEditor';
+import { parseFormula } from '@/utils/columnFormulas';
 
-// Column colors for status badges
-const COLUMN_COLORS = [
-  'hsl(280, 80%, 55%)', // Purple
-  'hsl(220, 80%, 55%)', // Blue  
-  'hsl(150, 70%, 45%)', // Green
-  'hsl(35, 90%, 55%)',  // Orange
-  'hsl(0, 80%, 60%)',   // Red
-  'hsl(180, 70%, 45%)', // Teal
-];
+const TYPE_ICONS: Record<string, any> = {
+  text: Type,
+  number: Hash,
+  date: Calendar,
+  checkbox: CheckSquare,
+  link: LinkIcon,
+  select: List,
+  status: Sparkles,
+  tags: Tag,
+};
 
 interface TableViewProps {
   columns: ColumnType[];
@@ -40,11 +37,12 @@ interface TableViewProps {
 }
 
 export const TableView = ({ columns, getColumnTasks }: TableViewProps) => {
-  const { createTask, updateColumn, deleteColumn, createColumn } = usePalette();
+  const { createTask, updateColumn, deleteColumn, createColumn, tasks } = usePalette();
   const [isAddingTask, setIsAddingTask] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnName, setNewColumnName] = useState('');
+  const [editingColumn, setEditingColumn] = useState<ColumnType | null>(null);
 
   const handleAddTask = (columnId: string) => {
     if (newTaskTitle.trim()) {
@@ -63,183 +61,149 @@ export const TableView = ({ columns, getColumnTasks }: TableViewProps) => {
     }
   };
 
-  // Get all tasks from all columns, grouped
-  const allTasksGrouped = columns.map((column, index) => ({
-    column,
-    tasks: getColumnTasks(column.id),
-    color: COLUMN_COLORS[index % COLUMN_COLORS.length],
-  }));
+  const boardTasks = columns.length > 0 ? columns.flatMap(c => getColumnTasks(c.id)) : [];
 
   return (
-    <div className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-sm animate-scale-in">
-      {/* Column Headers (Tabs) */}
-      <div className="flex items-center gap-1 px-4 py-3 bg-muted/30 border-b border-border/50 overflow-x-auto scrollbar-hide">
-        {columns.map((column, index) => (
-          <div
-            key={column.id}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-background border border-border/50 group hover:border-primary/30 transition-all duration-200"
-          >
-            <div
-              className="w-3 h-3 rounded-full transition-transform duration-200 group-hover:scale-110"
-              style={{ backgroundColor: COLUMN_COLORS[index % COLUMN_COLORS.length] }}
-            />
-            <span className="text-sm font-medium whitespace-nowrap">{column.name}</span>
-            <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-              {getColumnTasks(column.id).length}
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <MoreVertical className="h-3.5 w-3.5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem 
-                  onClick={() => deleteColumn(column.id)}
-                  className="text-destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Column
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ))}
-        
-        {/* Add Column Button */}
-        {isAddingColumn ? (
-          <div className="flex items-center gap-2 px-2">
-            <Input
-              value={newColumnName}
-              onChange={(e) => setNewColumnName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleAddColumn();
-                if (e.key === 'Escape') {
-                  setNewColumnName('');
-                  setIsAddingColumn(false);
-                }
-              }}
-              placeholder="Column name..."
-              className="h-8 w-32 text-sm"
-              autoFocus
-            />
-            <Button size="sm" onClick={handleAddColumn} className="h-8">Add</Button>
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              onClick={() => {
-                setNewColumnName('');
-                setIsAddingColumn(false);
-              }}
-              className="h-8"
-            >
-              ✕
-            </Button>
-          </div>
-        ) : (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsAddingColumn(true)}
-            className="text-muted-foreground hover:text-foreground shrink-0"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Add Column
-          </Button>
-        )}
-      </div>
-
-      {/* Table */}
+    <div className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <UITableRow className="bg-muted/20 hover:bg-muted/20">
               <TableHead className="w-10"></TableHead>
-              <TableHead className="w-8"></TableHead>
-              <TableHead className="min-w-[200px] font-semibold">Task</TableHead>
-              <TableHead className="w-32 font-semibold">Status</TableHead>
-              <TableHead className="w-32 font-semibold">Due Date</TableHead>
-              <TableHead className="w-40 font-semibold">Tags</TableHead>
+              <TableHead className="min-w-[200px] font-semibold">Task Name</TableHead>
+              {columns.map((column) => {
+                const Icon = TYPE_ICONS[column.type] || Type;
+                return (
+                  <TableHead key={column.id} className="min-w-[120px]">
+                    <div className="flex items-center justify-between group">
+                      <div className="flex items-center gap-2">
+                        <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="font-semibold">{column.name}</span>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => setEditingColumn(column)}
+                      >
+                        <Settings2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </TableHead>
+                );
+              })}
               <TableHead className="w-12"></TableHead>
             </UITableRow>
           </TableHeader>
           <TableBody>
-            {allTasksGrouped.map(({ column, tasks, color }) => (
-              <SortableContext 
-                key={column.id} 
-                items={tasks.map(t => t.id)} 
-                strategy={verticalListSortingStrategy}
-              >
-                {tasks.map(task => (
-                  <TableRow 
-                    key={task.id} 
-                    task={task} 
-                    columnName={column.name}
-                    columnColor={color}
-                  />
-                ))}
-                {/* Add Task Row for this column */}
-                {isAddingTask === column.id ? (
-                  <tr className="border-b border-border/30 bg-primary/5">
-                    <td colSpan={2}></td>
-                    <td colSpan={5} className="px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <Input
-                          value={newTaskTitle}
-                          onChange={(e) => setNewTaskTitle(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleAddTask(column.id);
-                            if (e.key === 'Escape') {
-                              setNewTaskTitle('');
-                              setIsAddingTask(null);
-                            }
-                          }}
-                          placeholder={`Add task to ${column.name}...`}
-                          className="h-8 text-sm flex-1 max-w-md"
-                          autoFocus
-                        />
-                        <Button size="sm" onClick={() => handleAddTask(column.id)} className="h-8">
-                          Add
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          onClick={() => {
-                            setNewTaskTitle('');
-                            setIsAddingTask(null);
-                          }}
-                          className="h-8"
+            {columns.map((column) => {
+              const columnTasks = getColumnTasks(column.id);
+              return (
+                <SortableContext 
+                  key={column.id} 
+                  items={columnTasks.map(t => t.id)} 
+                  strategy={verticalListSortingStrategy}
+                >
+                  <UITableRow className="bg-muted/5 font-medium border-l-2 border-l-primary/50">
+                    <td colSpan={columns.length + 3} className="px-3 py-1.5 text-xs text-muted-foreground uppercase tracking-wider">
+                      {column.name} ({columnTasks.length})
+                    </td>
+                  </UITableRow>
+                  {columnTasks.map(task => (
+                    <TableRow 
+                      key={task.id} 
+                      task={task} 
+                      columns={columns}
+                      columnColors={{}}
+                    />
+                  ))}
+                  {/* Add Task Row */}
+                  <UITableRow className="hover:bg-muted/20">
+                    <td colSpan={2} className="px-3 py-2">
+                      {isAddingTask === column.id ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={newTaskTitle}
+                            onChange={(e) => setNewTaskTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleAddTask(column.id);
+                              if (e.key === 'Escape') setIsAddingTask(null);
+                            }}
+                            placeholder="Task title..."
+                            className="h-8 text-sm max-w-sm"
+                            autoFocus
+                          />
+                          <Button size="sm" onClick={() => handleAddTask(column.id)} className="h-8">Add</Button>
+                        </div>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsAddingTask(column.id)}
+                          className="text-muted-foreground hover:text-foreground h-8 px-2"
                         >
-                          Cancel
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add Task
                         </Button>
-                      </div>
+                      )}
                     </td>
-                  </tr>
-                ) : (
-                  <tr className="border-b border-border/30 hover:bg-muted/20">
-                    <td colSpan={2}></td>
-                    <td colSpan={5} className="px-3 py-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsAddingTask(column.id)}
-                        className="text-muted-foreground hover:text-foreground h-8 px-2"
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        Add task to {column.name}
-                      </Button>
-                    </td>
-                  </tr>
-                )}
-              </SortableContext>
-            ))}
+                    <td colSpan={columns.length + 1}></td>
+                  </UITableRow>
+                </SortableContext>
+              );
+            })}
+            
+            {/* Formula / Aggregation Row */}
+            <UITableRow className="bg-muted/30 font-medium">
+              <td colSpan={2} className="px-3 py-3 text-sm">Totals / Aggregations</td>
+              {columns.map((column) => (
+                <td key={column.id} className="px-3 py-3 text-sm font-mono text-primary">
+                  {column.formula ? (
+                    parseFormula(column.formula, columns, boardTasks)
+                  ) : column.type === 'number' ? (
+                    boardTasks.reduce((acc, t) => acc + (Number(t.data?.[column.id]) || 0), 0)
+                  ) : null}
+                </td>
+              ))}
+              <td></td>
+            </UITableRow>
           </TableBody>
         </Table>
       </div>
+
+      <div className="p-4 border-t border-border/50 bg-muted/20">
+        {isAddingColumn ? (
+          <div className="flex items-center gap-2">
+            <Input
+              value={newColumnName}
+              onChange={(e) => setNewColumnName(e.target.value)}
+              placeholder="New column name..."
+              className="h-9 w-48"
+              autoFocus
+            />
+            <Button onClick={handleAddColumn}>Create Column</Button>
+            <Button variant="ghost" onClick={() => setIsAddingColumn(false)}>Cancel</Button>
+          </div>
+        ) : (
+          <Button variant="outline" size="sm" onClick={() => setIsAddingColumn(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Column
+          </Button>
+        )}
+      </div>
+
+      {editingColumn && (
+        <ColumnEditor
+          column={editingColumn}
+          open={!!editingColumn}
+          onOpenChange={(open) => !open && setEditingColumn(null)}
+          onUpdate={(updates) => updateColumn(editingColumn.id, updates)}
+          onDelete={() => {
+            deleteColumn(editingColumn.id);
+            setEditingColumn(null);
+          }}
+        />
+      )}
     </div>
   );
 };

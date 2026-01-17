@@ -2,25 +2,26 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Trash2, GripVertical, Calendar, ChevronDown, ChevronRight } from 'lucide-react';
-import { Task } from '@/types/palette';
+import { Task, Column } from '@/types/palette';
 import { usePalette } from '@/contexts/PaletteContext';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { format, isPast, isToday } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { ColumnTypeRenderer } from './ColumnTypeRenderer';
 
 interface TableRowProps {
   task: Task;
-  columnName: string;
-  columnColor: string;
+  columns: Column[];
+  columnColors: Record<string, string>;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
 }
 
-export const TableRow = ({ task, columnName, columnColor, isExpanded, onToggleExpand }: TableRowProps) => {
+export const TableRow = ({ task, columns, columnColors, isExpanded, onToggleExpand }: TableRowProps) => {
   const { updateTask, deleteTask } = usePalette();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(task.title);
 
   const {
@@ -37,8 +38,8 @@ export const TableRow = ({ task, columnName, columnColor, isExpanded, onToggleEx
     transition,
   };
 
-  const handleBlur = () => {
-    setIsEditing(false);
+  const handleTitleBlur = () => {
+    setIsEditingTitle(false);
     if (title.trim() && title !== task.title) {
       updateTask(task.id, { title: title.trim() });
     } else {
@@ -46,17 +47,10 @@ export const TableRow = ({ task, columnName, columnColor, isExpanded, onToggleEx
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleBlur();
-    } else if (e.key === 'Escape') {
-      setTitle(task.title);
-      setIsEditing(false);
-    }
+  const handleDataChange = (columnId: string, value: any) => {
+    const newData = { ...(task.data || {}), [columnId]: value };
+    updateTask(task.id, { data: newData });
   };
-
-  const isOverdue = task.dueDate && isPast(new Date(task.dueDate)) && !isToday(new Date(task.dueDate));
-  const isDueToday = task.dueDate && isToday(new Date(task.dueDate));
 
   return (
     <tr
@@ -64,11 +58,9 @@ export const TableRow = ({ task, columnName, columnColor, isExpanded, onToggleEx
       style={style}
       className={cn(
         "group border-b border-border/30 transition-all duration-200 hover:bg-muted/30",
-        isDragging && "opacity-50 bg-primary/5 shadow-lg",
-        "animate-fade-in"
+        isDragging && "opacity-50 bg-primary/5 shadow-lg"
       )}
     >
-      {/* Drag Handle */}
       <td className="w-10 px-2">
         <button
           {...attributes}
@@ -79,31 +71,19 @@ export const TableRow = ({ task, columnName, columnColor, isExpanded, onToggleEx
         </button>
       </td>
 
-      {/* Expand Toggle (optional for subtasks later) */}
-      <td className="w-8 px-1">
-        {onToggleExpand ? (
-          <button onClick={onToggleExpand} className="text-muted-foreground hover:text-foreground">
-            {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-          </button>
-        ) : (
-          <div className="w-4" />
-        )}
-      </td>
-
-      {/* Task Title */}
       <td className="px-3 py-3 min-w-[200px]">
-        {isEditing ? (
+        {isEditingTitle ? (
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
+            onBlur={handleTitleBlur}
+            onKeyDown={(e) => e.key === 'Enter' && handleTitleBlur()}
             autoFocus
             className="h-8 text-sm bg-background"
           />
         ) : (
           <span
-            onClick={() => setIsEditing(true)}
+            onClick={() => setIsEditingTitle(true)}
             className="text-sm cursor-text hover:bg-muted/50 rounded px-2 py-1 -mx-2 transition-colors inline-block min-w-[100px]"
           >
             {task.title}
@@ -111,53 +91,18 @@ export const TableRow = ({ task, columnName, columnColor, isExpanded, onToggleEx
         )}
       </td>
 
-      {/* Status Column */}
-      <td className="px-3 py-3 w-32">
-        <Badge 
-          className="text-xs font-medium transition-all duration-200 hover:scale-105"
-          style={{ 
-            backgroundColor: columnColor,
-            color: 'white'
-          }}
-        >
-          {columnName}
-        </Badge>
-      </td>
+      {columns.map((column) => (
+        <td key={column.id} className="px-3 py-3 min-w-[120px]">
+          <ColumnTypeRenderer
+            type={column.type}
+            value={task.data?.[column.id] || ''}
+            onChange={(val) => handleDataChange(column.id, val)}
+            isEditing={true}
+            settings={column.settings}
+          />
+        </td>
+      ))}
 
-      {/* Due Date */}
-      <td className="px-3 py-3 w-32">
-        {task.dueDate ? (
-          <div className={cn(
-            "flex items-center gap-1 text-xs px-2 py-1 rounded-md w-fit transition-all duration-200",
-            isOverdue && "text-destructive bg-destructive/10",
-            isDueToday && "text-primary bg-primary/10",
-            !isOverdue && !isDueToday && "text-muted-foreground bg-muted"
-          )}>
-            <Calendar className="h-3 w-3" />
-            <span>{format(new Date(task.dueDate), 'MMM d')}</span>
-          </div>
-        ) : (
-          <span className="text-xs text-muted-foreground/50">—</span>
-        )}
-      </td>
-
-      {/* Tags */}
-      <td className="px-3 py-3 w-40">
-        <div className="flex gap-1 flex-wrap">
-          {task.tags?.slice(0, 2).map((tag, i) => (
-            <Badge key={i} variant="outline" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-          {(task.tags?.length || 0) > 2 && (
-            <Badge variant="outline" className="text-xs">
-              +{(task.tags?.length || 0) - 2}
-            </Badge>
-          )}
-        </div>
-      </td>
-
-      {/* Actions */}
       <td className="px-3 py-3 w-12">
         <Button
           variant="ghost"
