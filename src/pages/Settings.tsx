@@ -13,10 +13,13 @@ import {
   EyeOff,
   AlertTriangle,
   Info,
-  Database
+  Database,
+  Cloud,
+  RefreshCw
 } from 'lucide-react';
 import { BottomNav } from '@/components/BottomNav';
 import { usePalette } from '@/contexts/PaletteContext';
+import { getSupabaseClient } from '@/lib/supabase';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,11 +35,18 @@ import { toast } from 'sonner';
 import paletteLogo from '@/assets/palette-logo.jpg';
 
 const Settings = () => {
-  const { settings, updateSettings, exportData, clearAllData } = usePalette();
+  const { settings, updateSettings, exportData, clearAllData, syncToCloud, isCloudConnected } = usePalette();
   const [showOpenAI, setShowOpenAI] = useState(false);
   const [showClaude, setShowClaude] = useState(false);
   const [showGemini, setShowGemini] = useState(false);
   const [showSupabaseKey, setShowSupabaseKey] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    await syncToCloud?.();
+    setIsSyncing(false);
+  };
 
   const handleExport = () => {
     const data = exportData();
@@ -114,12 +124,52 @@ const Settings = () => {
               </div>
             </div>
 
-            <Button 
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-              disabled={!settings.supabaseUrl || !settings.supabaseAnonKey}
-            >
-              Connect to Supabase
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+                disabled={!settings.supabaseUrl || !settings.supabaseAnonKey}
+                onClick={async () => {
+                  const client = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
+                  if (!client) {
+                    toast.error('Invalid Supabase configuration');
+                    return;
+                  }
+                  toast.promise(
+                    (async () => {
+                      const { data, error } = await client.from('boards').select('id').limit(1);
+                      if (error) throw error;
+                      return data;
+                    })(),
+                    {
+                      loading: 'Connecting to Supabase...',
+                      success: 'Successfully connected!',
+                      error: (err) => `Connection failed: ${err.message}. Make sure you have a "boards" table.`
+                    }
+                  );
+                }}
+              >
+                Connect to Supabase
+              </Button>
+              
+              {isCloudConnected && (
+                <Button 
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0"
+                  onClick={handleSync}
+                  disabled={isSyncing}
+                >
+                  <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
+                </Button>
+              )}
+            </div>
+            
+            {isCloudConnected && (
+              <div className="flex items-center gap-2 text-xs text-green-600 font-medium px-1">
+                <Cloud className="h-3 w-3" />
+                Cloud sync active
+              </div>
+            )}
           </Card>
         </section>
 
