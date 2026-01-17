@@ -140,6 +140,7 @@ export const usePaletteStore = () => {
         boardId,
         name,
         position: maxPosition + 1,
+        type: 'text',
       };
       return { ...prev, columns: [...prev.columns, newColumn] };
     });
