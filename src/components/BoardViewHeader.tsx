@@ -1,8 +1,10 @@
 import { Board } from '@/types/palette';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Star, Pin, Share2, MoreVertical } from 'lucide-react';
+import { ArrowLeft, Pin, Share2, MoreVertical, LayoutGrid } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePalette } from '@/contexts/PaletteContext';
+import { useState } from 'react';
+import { Input } from '@/components/ui/input';
 
 interface BoardViewHeaderProps {
   board: Board;
@@ -10,7 +12,16 @@ interface BoardViewHeaderProps {
 
 export function BoardViewHeader({ board }: BoardViewHeaderProps) {
   const navigate = useNavigate();
-  const { togglePinBoard } = usePalette();
+  const { togglePinBoard, updateBoard } = usePalette();
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(board.name);
+
+  const handleUpdateName = () => {
+    if (name.trim() && name !== board.name) {
+      updateBoard(board.id, { name: name.trim() });
+    }
+    setIsEditing(false);
+  };
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30">
@@ -31,7 +42,29 @@ export function BoardViewHeader({ board }: BoardViewHeaderProps) {
             <LayoutGrid className="h-6 w-6" style={{ color: board.color }} />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">{board.name}</h1>
+            {isEditing ? (
+              <Input
+                autoFocus
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={handleUpdateName}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleUpdateName();
+                  if (e.key === 'Escape') {
+                    setName(board.name);
+                    setIsEditing(false);
+                  }
+                }}
+                className="h-8 font-bold text-xl px-2 py-0 w-fit min-w-[150px]"
+              />
+            ) : (
+              <h1 
+                className="text-xl font-bold tracking-tight cursor-pointer hover:text-primary transition-colors"
+                onClick={() => setIsEditing(true)}
+              >
+                {board.name}
+              </h1>
+            )}
             <p className="text-xs text-muted-foreground">
               Last opened {new Date(board.lastOpenedAt).toLocaleDateString()}
             </p>
@@ -58,5 +91,3 @@ export function BoardViewHeader({ board }: BoardViewHeaderProps) {
     </header>
   );
 }
-
-import { LayoutGrid } from 'lucide-react';
