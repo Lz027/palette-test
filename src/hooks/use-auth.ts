@@ -37,11 +37,22 @@ export function useAuth() {
     if (error) throw error;
   };
 
+  const loginWithGithub = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+    if (error) throw error;
+  };
+
   return {
     user,
     isLoading,
     isAuthenticated: !!user,
     loginWithGoogle,
+    loginWithGithub,
     logout,
   };
 }
