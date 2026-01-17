@@ -10,6 +10,7 @@ import { LayoutGrid, List, Table as TableIcon, Search, Filter, ArrowUpDown } fro
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { PalAssistant } from '@/components/PalAssistant';
 
 const BoardView = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,6 +67,11 @@ const BoardView = () => {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+            <div className="h-6 w-[1px] bg-border mx-2" />
+            <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={() => createGroup(board.id, 'New Group')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Group
+            </Button>
             <div className="h-6 w-[1px] bg-border mx-2" />
             <Button variant="ghost" size="sm" className="text-muted-foreground">
               <Filter className="w-4 h-4 mr-2" />
@@ -131,6 +137,7 @@ const BoardView = () => {
           </Button>
         </div>
       </div>
+      <PalAssistant />
     </div>
   );
 };

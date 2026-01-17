@@ -8,6 +8,7 @@ import { CreateBoardDialog } from '@/components/CreateBoardDialog';
 import { BottomNav } from '@/components/BottomNav';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { AccountNav } from '@/components/AccountNav';
+import { PalAssistant } from '@/components/PalAssistant';
 import paletteLogo from '@/assets/palette-logo.jpg';
 import { cn } from '@/lib/utils';
 
@@ -153,6 +154,7 @@ const Dashboard = () => {
       />
       
       <BottomNav />
+      <PalAssistant />
     </div>
   );
 };

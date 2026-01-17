@@ -4,7 +4,7 @@ import { Palette, Sparkles, User } from 'lucide-react';
 const navItems = [
   { path: '/', icon: Palette, label: 'Palette' },
   { path: '/ai', icon: Sparkles, label: 'AI' },
-  { path: '/settings', icon: User, label: 'Profile' },
+  { path: '/profile', icon: User, label: 'Profile' },
 ];
 
 export const BottomNav = () => {
