@@ -16,11 +16,20 @@ import { Loader2, AlertTriangle, RefreshCcw } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const AppRoutes = () => {
   const { shouldShowIntro } = useIntroScreen();
   const { user, isLoading, error, loginWithGoogle, loginWithGithub } = useAuth();
+
+  console.log("AppRoutes State:", { isLoading, hasUser: !!user, hasError: !!error, shouldShowIntro });
 
   if (isLoading) {
     return (
@@ -55,9 +64,14 @@ const AppRoutes = () => {
             <AlertTriangle className="h-8 w-8 text-destructive" />
           </div>
           <h2 className="text-2xl font-bold mb-2">Connection Error</h2>
-          <p className="text-muted-foreground mb-8 text-sm leading-relaxed">
-            We couldn't connect to the authentication service. This usually happens due to network issues or configuration errors.
+          <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+            We couldn't connect to the authentication service.
           </p>
+          <div className="bg-muted p-3 rounded-lg mb-6 text-left overflow-auto max-h-32">
+            <p className="text-[10px] font-mono text-destructive break-all">
+              {error.message || "Unknown authentication error"}
+            </p>
+          </div>
           <Button 
             onClick={() => window.location.reload()} 
             className="w-full rounded-xl py-6 font-bold gap-2"
@@ -77,7 +91,6 @@ const AppRoutes = () => {
 
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background px-4 py-12 overflow-hidden relative">
-        {/* Background Accents */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-palette-red/5 rounded-full blur-[100px]" />
           <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-palette-purple/5 rounded-full blur-[100px]" />
@@ -88,7 +101,6 @@ const AppRoutes = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center space-y-8 w-full max-w-[360px] relative z-10"
         >
-          {/* Logo */}
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-palette-purple to-palette-red rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
             <div className="relative h-24 w-24 rounded-3xl bg-card flex items-center justify-center border border-border/50 shadow-2xl overflow-hidden">
@@ -129,13 +141,8 @@ const AppRoutes = () => {
                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
                 <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
-              Continue with Google
+              Google
             </Button>
-
-            <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/40"></span></div>
-              <div className="relative flex justify-center text-[10px] uppercase tracking-widest"><span className="bg-background px-3 text-muted-foreground/60 font-bold">Secure Access</span></div>
-            </div>
           </div>
           
           <p className="text-[10px] text-muted-foreground/60 mt-4 text-center max-w-[240px] leading-relaxed font-medium">
