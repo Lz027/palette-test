@@ -1,24 +1,20 @@
 import { useState, useEffect } from "react";
 
 export const useIntroScreen = () => {
-  // Initialize from localStorage immediately to avoid flash or missing intro
-  const [shouldShowIntro, setShouldShowIntro] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !localStorage.getItem("palette_intro_seen");
-    }
-    return false;
-  });
+  const [shouldShowIntro, setShouldShowIntro] = useState(true); // Default to true to ensure it shows
 
   useEffect(() => {
     const introSeen = localStorage.getItem("palette_intro_seen");
-    if (!introSeen) {
-      setShouldShowIntro(true);
-    } else {
+    console.log("Intro seen status:", introSeen);
+    if (introSeen === "true") {
       setShouldShowIntro(false);
+    } else {
+      setShouldShowIntro(true);
     }
   }, []);
 
   const markIntroSeen = () => {
+    console.log("Marking intro as seen");
     localStorage.setItem("palette_intro_seen", "true");
     setShouldShowIntro(false);
   };

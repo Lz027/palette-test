@@ -120,9 +120,9 @@ const AppRoutes = () => {
                 setIsEmailLoading(true);
                 try {
                   await loginWithEmail(email);
-                  toast.success("Magic link sent to your email!");
+                  toast.success("Login link sent to your email!");
                 } catch (err) {
-                  toast.error("Failed to send magic link.");
+                  toast.error("Failed to send login link.");
                   console.error(err);
                 } finally {
                   setIsEmailLoading(false);
@@ -146,7 +146,7 @@ const AppRoutes = () => {
                 disabled={isEmailLoading}
                 className="w-full h-14 rounded-2xl font-bold bg-palette-purple hover:bg-palette-purple/90"
               >
-                {isEmailLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Magic Link"}
+                {isEmailLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in with Email"}
               </Button>
             </form>
           </div>
