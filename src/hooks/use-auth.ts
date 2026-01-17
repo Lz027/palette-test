@@ -23,7 +23,6 @@ export function useAuth() {
 
     checkSession();
 
-    // Listen for changes on auth state (logged in, signed out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setIsLoading(false);
@@ -31,21 +30,6 @@ export function useAuth() {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const loginWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin
-      }
-    });
-    if (error) throw error;
-  };
-
-  const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  };
 
   const loginWithGithub = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -57,13 +41,28 @@ export function useAuth() {
     if (error) throw error;
   };
 
+  const loginWithEmail = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
+    if (error) throw error;
+  };
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  };
+
   return {
     user,
     isLoading,
     error,
     isAuthenticated: !!user,
-    loginWithGoogle,
     loginWithGithub,
+    loginWithEmail,
     logout,
   };
 }
