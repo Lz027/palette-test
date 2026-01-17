@@ -12,8 +12,9 @@ import AiTools from "./pages/AiTools";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Intro from "./pages/Intro";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle, RefreshCcw } from "lucide-react";
 import { Button } from "./components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 const queryClient = new QueryClient();
 
@@ -23,22 +24,48 @@ const AppRoutes = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-background gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground animate-pulse">Initializing Palette...</p>
+      <div className="flex flex-col items-center justify-center h-screen bg-background">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary relative" />
+          </div>
+          <div className="flex flex-col items-center">
+            <p className="text-base font-bold tracking-tight">PALETTE</p>
+            <p className="text-xs text-muted-foreground animate-pulse">Setting up your workspace...</p>
+          </div>
+        </motion.div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-background p-4 text-center">
-        <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
-        <h2 className="text-xl font-bold mb-2">Connection Error</h2>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          We couldn't connect to the authentication service. Please check your Supabase configuration.
-        </p>
-        <Button onClick={() => window.location.reload()}>Try Again</Button>
+      <div className="flex flex-col items-center justify-center h-screen bg-background p-6 text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-sm w-full p-8 rounded-[2.5rem] bg-card border border-border/50 shadow-2xl"
+        >
+          <div className="w-16 h-16 bg-destructive/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <AlertTriangle className="h-8 w-8 text-destructive" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Connection Error</h2>
+          <p className="text-muted-foreground mb-8 text-sm leading-relaxed">
+            We couldn't connect to the authentication service. This usually happens due to network issues or configuration errors.
+          </p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="w-full rounded-xl py-6 font-bold gap-2"
+          >
+            <RefreshCcw className="w-4 h-4" />
+            Try Again
+          </Button>
+        </motion.div>
       </div>
     );
   }
@@ -49,85 +76,94 @@ const AppRoutes = () => {
     }
 
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background px-4 py-12">
-        <div className="flex flex-col items-center space-y-8 w-full max-w-[340px] animate-fade-in">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background px-4 py-12 overflow-hidden relative">
+        {/* Background Accents */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-palette-red/5 rounded-full blur-[100px]" />
+          <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-palette-purple/5 rounded-full blur-[100px]" />
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center space-y-8 w-full max-w-[360px] relative z-10"
+        >
           {/* Logo */}
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-red-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-            <div className="relative h-20 w-20 rounded-2xl bg-card flex items-center justify-center border border-border/50 shadow-2xl">
-              <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-red-500 shadow-inner"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-palette-purple to-palette-red rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+            <div className="relative h-24 w-24 rounded-3xl bg-card flex items-center justify-center border border-border/50 shadow-2xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-palette-purple/10 to-palette-red/10" />
+              <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-palette-purple to-palette-red shadow-inner flex items-center justify-center">
+                <div className="w-6 h-6 bg-white/20 rounded-full blur-sm" />
+              </div>
             </div>
           </div>
 
           <div className="space-y-3 text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground">Sign in to Palette</h1>
-            <p className="text-muted-foreground text-sm px-4">
+            <h1 className="text-4xl font-black tracking-tighter text-foreground">Welcome back</h1>
+            <p className="text-muted-foreground text-sm px-4 font-medium">
               The creative workspace for minimalist project management.
             </p>
           </div>
           
-          <div className="flex flex-col w-full gap-3">
-            {/* GitHub Login */}
-            <button 
+          <div className="flex flex-col w-full gap-4">
+            <Button 
               onClick={() => loginWithGithub()}
-              className="flex items-center justify-center gap-3 w-full rounded-2xl border border-border/50 bg-card px-6 py-3.5 text-sm font-semibold transition-all hover:bg-muted/50 active:scale-[0.98] shadow-sm"
+              variant="outline"
+              className="h-14 rounded-2xl border-border/50 bg-card hover:bg-muted/50 font-bold gap-3 shadow-sm transition-all active:scale-[0.98]"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
               </svg>
               Continue with GitHub
-            </button>
+            </Button>
 
-            {/* Email Login (Mock/UI only for now) */}
-            <button className="flex items-center justify-center gap-3 w-full rounded-2xl border border-border/50 bg-card px-6 py-3.5 text-sm font-semibold transition-all hover:bg-muted/50 active:scale-[0.98] shadow-sm">
-              <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              Continue with Email
-            </button>
-
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/40"></span></div>
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-3 text-muted-foreground/60 font-medium">more options</span></div>
-            </div>
-
-            <button 
+            <Button 
               onClick={() => loginWithGoogle()}
-              className="flex items-center justify-center gap-3 w-full rounded-2xl bg-secondary px-6 py-3 text-sm font-semibold transition-all hover:bg-secondary/80 active:scale-[0.98]"
+              variant="secondary"
+              className="h-14 rounded-2xl font-bold gap-3 shadow-sm transition-all active:scale-[0.98]"
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24">
+              <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                 <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
                 <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
-              Google
-            </button>
+              Continue with Google
+            </Button>
+
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/40"></span></div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-widest"><span className="bg-background px-3 text-muted-foreground/60 font-bold">Secure Access</span></div>
+            </div>
           </div>
           
-          <p className="text-[10px] text-muted-foreground/60 mt-4 text-center max-w-[240px] leading-relaxed">
-            By signing in, you agree to our Terms and Privacy Policy.
+          <p className="text-[10px] text-muted-foreground/60 mt-4 text-center max-w-[240px] leading-relaxed font-medium">
+            By signing in, you agree to our <br />
+            <span className="underline cursor-pointer hover:text-foreground transition-colors">Terms of Service</span> and <span className="underline cursor-pointer hover:text-foreground transition-colors">Privacy Policy</span>.
           </p>
-        </div>
+        </motion.div>
       </div>
     );
   }
   
   return (
-    <Routes>
-      <Route 
-        path="/intro" 
-        element={!shouldShowIntro ? <Navigate to="/" replace /> : <Intro />} 
-      />
-      <Route 
-        path="/" 
-        element={shouldShowIntro ? <Navigate to="/intro" replace /> : <Dashboard />} 
-      />
-      <Route path="/board/:id" element={<BoardView />} />
-      <Route path="/ai" element={<AiTools />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <AnimatePresence mode="wait">
+      <Routes>
+        <Route 
+          path="/intro" 
+          element={!shouldShowIntro ? <Navigate to="/" replace /> : <Intro />} 
+        />
+        <Route 
+          path="/" 
+          element={shouldShowIntro ? <Navigate to="/intro" replace /> : <Dashboard />} 
+        />
+        <Route path="/board/:id" element={<BoardView />} />
+        <Route path="/ai" element={<AiTools />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
   );
 };
 
