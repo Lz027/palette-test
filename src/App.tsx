@@ -12,18 +12,33 @@ import AiTools from "./pages/AiTools";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Intro from "./pages/Intro";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
+import { Button } from "./components/ui/button";
 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   const { shouldShowIntro } = useIntroScreen();
-  const { user, isLoading, loginWithGoogle, loginWithGithub } = useAuth();
+  const { user, isLoading, error, loginWithGoogle, loginWithGithub } = useAuth();
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-background">
+      <div className="flex flex-col items-center justify-center h-screen bg-background gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground animate-pulse">Initializing Palette...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-background p-4 text-center">
+        <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
+        <h2 className="text-xl font-bold mb-2">Connection Error</h2>
+        <p className="text-muted-foreground mb-6 max-w-md">
+          We couldn't connect to the authentication service. Please check your Supabase configuration.
+        </p>
+        <Button onClick={() => window.location.reload()}>Try Again</Button>
       </div>
     );
   }
