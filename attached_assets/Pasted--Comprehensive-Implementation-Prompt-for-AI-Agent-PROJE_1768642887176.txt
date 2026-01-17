@@ -1,0 +1,350 @@
+## Comprehensive Implementation Prompt for AI Agent
+
+### PROJECT OVERVIEW
+Build on the existing Palette repository (React + Vite + Tailwind CSS) to add advanced project management features. The app is a personal project management tool inspired by Notion and Monday.com with a beautiful coral-to-purple gradient logo.
+
+---
+
+## FEATURE 1: ANIMATED INTRO/SPLASH SCREEN
+
+### Objective
+Create a professional, animated intro screen that displays on first app visit, showing the Palette logo and app name before transitioning to the dashboard.
+
+### Implementation Details
+
+**File: `src/pages/Intro.tsx`**
+- Create a full-screen centered component with:
+  - Background: Subtle gradient (light to slightly darker)
+  - Logo: Display the Palette logo (from `src/assets/palette-logo.jpg`) centered
+  - Animation: Fade-in effect over 800ms using Framer Motion
+  - App Name: Show "PALETTE" text below logo with typewriter effect (animate each letter appearing)
+  - Tagline: "Your projects, beautifully organized" fades in after name
+  - Auto-transition: After 3 seconds, fade out and navigate to Dashboard
+  - Click to skip: Allow users to click anywhere to skip to Dashboard immediately
+  - No bottom nav on this page
+
+**File: `src/hooks/useIntroScreen.ts`**
+- Create custom hook to manage intro screen state
+- Check localStorage key `palette_intro_seen` on mount
+- Return `shouldShowIntro` boolean
+- Provide `markIntroSeen()` function to set localStorage flag
+
+**File: `src/App.tsx` (modifications)**
+- Import `useIntroScreen` hook
+- Add route: `<Route path="/intro" element={<Intro />} />`
+- On app load, check if intro should be shown
+- If first visit, redirect to `/intro` before showing Dashboard
+- After intro is dismissed, navigate to `/` (Dashboard)
+
+**Animations:**
+- Use Framer Motion for all animations
+- Logo: `opacity: 0 → 1` over 800ms with easeOut
+- Text: Stagger animation for each letter (50ms delay between letters)
+- Tagline: Fade in after 1.5s delay
+- Exit: Fade out over 500ms before navigation
+
+---
+
+## FEATURE 2: ENHANCED BOARD TEMPLATES
+
+### Objective
+Allow users to create boards from pre-configured templates (Blank, Kanban, CRM) with appropriate columns and settings.
+
+### Implementation Details
+
+**File: `src/types/palette.ts` (modifications)**
+- Extend `Board` interface:
+  ```
+  templateType: 'blank' | 'kanban' | 'crm'
+  color: string (hex color, default: '#6366f1')
+  icon: string (lucide-react icon name, default: 'layout-grid')
+  description: string (optional)
+  ```
+- Extend `Column` interface:
+  ```
+  type: 'text' | 'checkbox' | 'file' | 'link' | 'date' | 'tags' | 'number' | 'select' | 'status'
+  settings: Record<string, any> (for column-specific options like select options)
+  ```
+
+**File: `src/hooks/usePaletteStore.ts` (modifications)**
+- Update `createBoard()` function to accept `templateType` parameter
+- Based on template type, create appropriate default columns:
+  - **Blank**: Single "Title" column (type: text)
+  - **Kanban**: "To Do" (status), "In Progress" (status), "Done" (status)
+  - **CRM**: "Contact" (text), "Company" (text), "Email" (text), "Status" (select with options: Lead, Prospect, Customer)
+- Store template type in board object
+
+**File: `src/components/CreateBoardDialog.tsx` (modifications)**
+- Add template selection UI before board creation
+- Show 3 cards: "Blank", "Kanban", "CRM" with icons and descriptions
+- Allow user to select template and enter board name
+- Pass selected template to `createBoard()`
+- Add board color picker (optional, with preset colors)
+- Add board icon picker using lucide-react icons
+
+**Template Descriptions:**
+- **Blank**: Start with a clean slate. Add columns as needed.
+- **Kanban**: Perfect for workflow management. Organize tasks by status.
+- **CRM**: Manage contacts and deals. Track customer relationships.
+
+---
+
+## FEATURE 3: ADVANCED COLUMN TYPES
+
+### Objective
+Implement a robust column type system supporting multiple data types with appropriate renderers and editors.
+
+### Implementation Details
+
+**File: `src/components/ColumnTypeRenderer.tsx` (new)**
+- Create component that renders different column types:
+  - **text**: Simple text input
+  - **checkbox**: Toggle checkbox
+  - **file**: File upload button (show file name/icon)
+  - **link**: URL input with link icon
+  - **date**: Date picker (using existing shadcn date picker)
+  - **tags**: Tag input with autocomplete
+  - **number**: Number input with validation
+  - **select**: Dropdown with predefined options
+  - **status**: Special select for status (To Do, In Progress, Done, etc.)
+
+**File: `src/components/ColumnEditor.tsx` (new)**
+- Modal/dialog for editing column properties:
+  - Column name
+  - Column type selector
+  - Type-specific settings (e.g., select options, number format)
+  - Delete column option
+  - Reorder columns (drag handle)
+
+**File: `src/components/TableRow.tsx` (modifications)**
+- Update to use `ColumnTypeRenderer` for each cell
+- Pass column type to renderer
+- Handle edit mode for each cell type
+- Support inline editing with appropriate input types
+
+**File: `src/components/TableView.tsx` (modifications)**
+- Add column header with type icon
+- Add "Add Column" button
+- Show column type indicator in header
+- Support column reordering via drag-and-drop
+
+**File: `src/components/Column.tsx` (modifications)**
+- Update Kanban column to support different column types
+- Render task cards with type-specific data display
+
+---
+
+## FEATURE 4: EXCEL-LIKE FUNCTIONS
+
+### Objective
+Add formula and aggregation support for number columns, enabling calculations across tasks.
+
+### Implementation Details
+
+**File: `src/utils/columnFormulas.ts` (new)**
+- Implement formula parser and evaluator
+- Support functions:
+  - **SUM**: Sum all values in column
+  - **COUNT**: Count non-empty cells
+  - **AVG**: Average of values
+  - **MIN**: Minimum value
+  - **MAX**: Maximum value
+  - **COUNTIF**: Count cells matching condition
+  - **SUMIF**: Sum cells matching condition
+- Formula syntax: `=SUM(columnName)` or `=AVG(columnName)`
+- Handle errors gracefully (show error message in cell)
+
+**File: `src/types/palette.ts` (modifications)**
+- Extend `Column` interface:
+  ```
+  formula?: string (e.g., "=SUM(Price)")
+  aggregation?: 'sum' | 'avg' | 'count' | 'min' | 'max'
+  ```
+
+**File: `src/components/ColumnEditor.tsx` (modifications)**
+- Add formula input field for number columns
+- Show formula preview/result
+- Validate formula syntax
+
+**File: `src/components/TableView.tsx` (modifications)**
+- Add formula result row at bottom of table
+- Show calculated values
+- Update in real-time as tasks change
+
+**Example:**
+- Column "Price" (type: number) with formula `=SUM(Price)` shows total at bottom
+- Column "Quantity" with aggregation "SUM" shows total
+
+---
+
+## FEATURE 5: SMOOTH ANIMATIONS WITH FRAMER MOTION
+
+### Objective
+Enhance user experience with smooth, professional animations throughout the app using Framer Motion.
+
+### Implementation Details
+
+**File: `src/components/AnimatedSection.tsx` (new)**
+- Wrapper component for scroll-triggered animations
+- Props: `children`, `delay`, `direction` (left/right/up/down)
+- Uses Framer Motion's `useInView` hook
+- Animates on scroll into viewport
+- Stagger children animations
+
+**File: `src/App.tsx` (modifications)**
+- Add page transition animations between routes
+- Use Framer Motion's `AnimatePresence` for exit animations
+- Fade in/out with slight scale effect
+
+**File: `src/pages/Dashboard.tsx` (modifications)**
+- Wrap sections with `AnimatedSection` component
+- Stagger board cards animation
+- Smooth fade-in for feature cards
+- Add hover animations to interactive elements
+
+**File: `src/components/BoardCard.tsx` (modifications)**
+- Add hover scale animation (1 → 1.02)
+- Add shadow animation on hover
+- Smooth color transitions
+
+**File: `src/components/TaskCard.tsx` (modifications)**
+- Add hover lift animation
+- Smooth drag animations
+- Fade in when created
+
+**File: `src/pages/BoardView.tsx` (modifications)**
+- Animate column appearance
+- Smooth task reordering animations
+- Animate task creation/deletion
+
+**Animations to implement:**
+- Page transitions: Fade + slight scale (300ms)
+- Section entrance: Fade + slide from direction (500ms)
+- Card hover: Scale to 1.02, shadow increase (200ms)
+- Task drag: Smooth opacity and scale changes
+- Button interactions: Subtle scale on click (150ms)
+- List stagger: 50ms delay between items
+
+---
+
+## FEATURE 6: CUSTOM ICON SYSTEM
+
+### Objective
+Provide a consistent icon system for boards, columns, and tasks using lucide-react icons.
+
+### Implementation Details
+
+**File: `src/components/IconPicker.tsx` (new)**
+- Modal with grid of lucide-react icons
+- Search functionality to find icons
+- Categories: (General, Status, Project, Communication, etc.)
+- Selected icon highlighted
+- Return selected icon name
+
+**File: `src/types/palette.ts` (modifications)**
+- Board interface already has `icon: string` field
+- Add icon to Column type (optional)
+
+**File: `src/components/BoardCard.tsx` (modifications)**
+- Display board icon in card header
+- Use board color as icon background
+- Click to open icon picker
+
+**File: `src/components/CreateBoardDialog.tsx` (modifications)**
+- Include icon picker in board creation
+- Show selected icon with color preview
+- Preset icon suggestions based on template
+
+**File: `src/pages/Dashboard.tsx` (modifications)**
+- Display board icons in all board listings
+- Use icons in feature cards
+
+**Preset Icons:**
+- Kanban template: "kanban" or "trello"
+- CRM template: "users" or "contact"
+- Blank template: "layout-grid"
+
+---
+
+## FEATURE 7: UI POLISH & RESPONSIVE DESIGN
+
+### Objective
+Ensure the app looks professional, is fully responsive, and provides excellent UX across all devices.
+
+### Implementation Details
+
+**File: `src/components/LoadingSkeleton.tsx` (new)**
+- Create skeleton loaders for:
+  - Board cards
+  - Table rows
+  - Column headers
+- Use Framer Motion for shimmer effect
+
+**File: `src/pages/Dashboard.tsx` (modifications)**
+- Improve empty state messaging
+- Add helpful CTAs
+- Better spacing and alignment
+
+**File: `src/pages/BoardView.tsx` (modifications)**
+- Add loading state while board loads
+- Improve error handling
+- Better mobile layout for table view
+
+**File: `src/index.css` (modifications)**
+- Add smooth scroll behavior
+- Improve focus states for accessibility
+- Add custom scrollbar styling
+- Enhance dark mode support
+
+**Responsive Design:**
+- Mobile: Stack columns vertically, single-column layout
+- Tablet: 2-column grid for boards
+- Desktop: 3-column grid for boards
+- Ensure all modals work on mobile
+- Touch-friendly button sizes (min 44px)
+
+---
+
+## IMPLEMENTATION ORDER
+
+1. **Install dependencies**: `framer-motion`, `react-hot-toast`
+2. **Update types** (`src/types/palette.ts`)
+3. **Update store** (`src/hooks/usePaletteStore.ts`)
+4. **Create intro screen** (`src/pages/Intro.tsx`, `src/hooks/useIntroScreen.ts`)
+5. **Update App.tsx** with intro route and animations
+6. **Create animation components** (`AnimatedSection.tsx`)
+7. **Create column type system** (`ColumnTypeRenderer.tsx`, `ColumnEditor.tsx`)
+8. **Create icon picker** (`IconPicker.tsx`)
+9. **Create formula system** (`columnFormulas.ts`)
+10. **Update existing components** with new features
+11. **Add animations** to all pages and components
+12. **Polish and test** responsive design
+
+---
+
+## TESTING CHECKLIST
+
+- [ ] Intro screen shows on first visit, can be skipped
+- [ ] All 3 board templates create correct columns
+- [ ] Column types render correctly in table and kanban views
+- [ ] Formulas calculate correctly
+- [ ] Animations are smooth (60fps)
+- [ ] Responsive design works on mobile/tablet/desktop
+- [ ] Icon picker works and saves selection
+- [ ] All data persists in localStorage
+- [ ] No console errors
+
+---
+
+## DESIGN NOTES
+
+- **Color Palette**: Use existing gradient (coral #FF6B6B to purple #7C3AED)
+- **Typography**: Maintain existing font hierarchy
+- **Spacing**: Use consistent 4px grid
+- **Shadows**: Subtle shadows, increase on hover/active states
+- **Transitions**: 200-300ms for most interactions, 500ms for page transitions
+- **Accessibility**: Maintain WCAG AA compliance, proper focus states
+
+---
+
+This prompt provides all necessary details for an AI agent to implement these features systematically while maintaining code quality and consistency with the existing codebase.
