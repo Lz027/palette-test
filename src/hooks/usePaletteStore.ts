@@ -45,7 +45,7 @@ export const usePaletteStore = () => {
   }, [state]);
 
   // Board operations
-  const createBoard = useCallback((name: string): Board => {
+  const createBoard = useCallback((name: string, templateType: 'blank' | 'kanban' | 'crm' = 'blank'): Board => {
     const newBoard: Board = {
       id: crypto.randomUUID(),
       name,
@@ -53,13 +53,38 @@ export const usePaletteStore = () => {
       pinned: false,
       archived: false,
       createdAt: new Date().toISOString(),
+      templateType,
+      color: '#6366f1',
+      icon: templateType === 'kanban' ? 'kanban' : templateType === 'crm' ? 'users' : 'layout-grid',
     };
 
-    const defaultColumns: Column[] = [
-      { id: crypto.randomUUID(), boardId: newBoard.id, name: 'To Do', position: 0 },
-      { id: crypto.randomUUID(), boardId: newBoard.id, name: 'In Progress', position: 1 },
-      { id: crypto.randomUUID(), boardId: newBoard.id, name: 'Done', position: 2 },
-    ];
+    let defaultColumns: Column[] = [];
+    
+    if (templateType === 'kanban') {
+      defaultColumns = [
+        { id: crypto.randomUUID(), boardId: newBoard.id, name: 'To Do', position: 0, type: 'status' },
+        { id: crypto.randomUUID(), boardId: newBoard.id, name: 'In Progress', position: 1, type: 'status' },
+        { id: crypto.randomUUID(), boardId: newBoard.id, name: 'Done', position: 2, type: 'status' },
+      ];
+    } else if (templateType === 'crm') {
+      defaultColumns = [
+        { id: crypto.randomUUID(), boardId: newBoard.id, name: 'Contact', position: 0, type: 'text' },
+        { id: crypto.randomUUID(), boardId: newBoard.id, name: 'Company', position: 1, type: 'text' },
+        { id: crypto.randomUUID(), boardId: newBoard.id, name: 'Email', position: 2, type: 'link' },
+        { 
+          id: crypto.randomUUID(), 
+          boardId: newBoard.id, 
+          name: 'Status', 
+          position: 3, 
+          type: 'select',
+          settings: { options: ['Lead', 'Prospect', 'Customer'] }
+        },
+      ];
+    } else {
+      defaultColumns = [
+        { id: crypto.randomUUID(), boardId: newBoard.id, name: 'Title', position: 0, type: 'text' },
+      ];
+    }
 
     setState(prev => ({
       ...prev,
