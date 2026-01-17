@@ -7,6 +7,7 @@ import { Plus, LayoutGrid, Clock, Star, Sparkles, Layout, Zap, ChevronRight } fr
 import { CreateBoardDialog } from '@/components/CreateBoardDialog';
 import { BottomNav } from '@/components/BottomNav';
 import { AnimatedSection } from '@/components/AnimatedSection';
+import { AccountNav } from '@/components/AccountNav';
 import paletteLogo from '@/assets/palette-logo.jpg';
 import { cn } from '@/lib/utils';
 
@@ -39,33 +40,36 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 selection:bg-primary/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
         
         {/* Header Section */}
         <AnimatedSection direction="down">
-          <header className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/50 pb-6">
+          <header className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
             <div className="relative flex items-center gap-4">
               <div className="relative group">
-                <div className="absolute inset-0 gradient-palette rounded-2xl blur-md opacity-50 group-hover:opacity-75 transition-opacity" />
+                <div className="absolute inset-0 gradient-palette rounded-2xl blur-md opacity-30 group-hover:opacity-50 transition-opacity" />
                 <img 
                   src={paletteLogo} 
                   alt="PALETTE" 
-                  className="relative h-14 w-14 rounded-2xl object-cover shadow-lg transition-transform duration-300 group-hover:scale-105"
+                  className="relative h-12 w-12 rounded-2xl object-cover shadow-sm transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gradient tracking-tight">PALETTE</h1>
-                <p className="text-sm text-muted-foreground">Your projects, beautifully organized</p>
+                <h1 className="text-xl font-bold text-gradient tracking-tight">PALETTE</h1>
+                <p className="text-xs text-muted-foreground font-medium">Beautifully organized</p>
               </div>
             </div>
-            <Button 
-              onClick={() => setIsCreateOpen(true)}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              New Board
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button 
+                onClick={() => setIsCreateOpen(true)}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:shadow-md transition-all active:scale-95"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Board
+              </Button>
+              <AccountNav />
+            </div>
           </header>
         </AnimatedSection>
 
