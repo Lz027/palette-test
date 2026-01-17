@@ -49,13 +49,13 @@ export const BoardCard = ({ board }: BoardCardProps) => {
       )}
     >
       {/* Hover gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(135deg, ${board.color}10, ${board.color}20)` }} />
       
       {/* Pin indicator */}
       {board.pinned && (
         <div className="absolute top-3 left-3">
-          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-            <Pin className="h-3 w-3 text-primary fill-primary" />
+          <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: `${board.color}20` }}>
+            <Pin className="h-3 w-3 fill-current" style={{ color: board.color }} />
           </div>
         </div>
       )}
@@ -63,7 +63,7 @@ export const BoardCard = ({ board }: BoardCardProps) => {
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-4">
           <div className={cn("flex-1 pr-2", board.pinned && "pl-8")}>
-            <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors duration-200">
+            <h3 className="font-semibold text-foreground truncate transition-colors duration-200" style={{ '--hover-color': board.color } as any}>
               {board.name}
             </h3>
             <p className="text-sm text-muted-foreground mt-1">

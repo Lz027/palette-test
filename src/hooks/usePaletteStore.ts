@@ -55,7 +55,7 @@ export const usePaletteStore = () => {
   }, [state]);
 
   // Board operations
-  const createBoard = useCallback((name: string, templateType: 'blank' | 'kanban' | 'crm' = 'blank'): Board => {
+  const createBoard = useCallback((name: string, templateType: 'blank' | 'kanban' | 'crm' = 'blank', color: string = '#FF9AA2'): Board => {
     const boardId = crypto.randomUUID();
     const newBoard: Board = {
       id: boardId,
@@ -65,7 +65,7 @@ export const usePaletteStore = () => {
       archived: false,
       createdAt: new Date().toISOString(),
       templateType,
-      color: '#FF9AA2',
+      color,
       icon: templateType === 'kanban' ? 'kanban' : templateType === 'crm' ? 'users' : 'layout-grid',
     };
 
@@ -119,6 +119,22 @@ export const usePaletteStore = () => {
         const group = prev.groups.find(g => g.id === t.groupId);
         return group ? group.boardId !== id : true;
       }),
+    }));
+  }, []);
+
+  const openBoard = useCallback((id: string) => {
+    setState(prev => ({
+      ...prev,
+      boards: prev.boards.map(b =>
+        b.id === id ? { ...b, lastOpenedAt: new Date().toISOString() } : b
+      ),
+    }));
+  }, []);
+
+  const togglePinBoard = useCallback((id: string) => {
+    setState(prev => ({
+      ...prev,
+      boards: prev.boards.map(b => (b.id === id ? { ...b, pinned: !b.pinned } : b)),
     }));
   }, []);
 
@@ -232,11 +248,20 @@ export const usePaletteStore = () => {
     [state.groups, state.tasks]
   );
 
+  const getBoardTaskCount = useCallback(
+    (boardId: string) => {
+      const boardGroups = state.groups.filter(g => g.boardId === boardId).map(g => g.id);
+      return state.tasks.filter(t => t.groupId && boardGroups.includes(t.groupId)).length;
+    },
+    [state.groups, state.tasks]
+  );
+
   return {
     ...state,
     createBoard,
     updateBoard,
     deleteBoard,
+    openBoard,
     togglePinBoard,
     createGroup,
     updateGroup,
@@ -249,6 +274,7 @@ export const usePaletteStore = () => {
     getBoardColumns,
     getColumnTasks,
     getActiveBoards,
+    getBoardTaskCount,
     getBoardProgress,
     updateSettings: (updates: Partial<UserSettings>) => setState(prev => ({ ...prev, settings: { ...prev.settings, ...updates } })),
   };

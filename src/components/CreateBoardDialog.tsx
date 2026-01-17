@@ -12,6 +12,7 @@ import { usePalette } from '@/contexts/PaletteContext';
 import { useNavigate } from 'react-router-dom';
 import { LayoutGrid, Kanban, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ColorPicker } from '@/components/ColorPicker';
 
 interface CreateBoardDialogProps {
   open: boolean;
@@ -45,12 +46,13 @@ const templates = [
 export const CreateBoardDialog = ({ open, onOpenChange }: CreateBoardDialogProps) => {
   const [name, setName] = useState('');
   const [template, setTemplate] = useState<'blank' | 'kanban' | 'crm'>('blank');
+  const [color, setColor] = useState('#FF9AA2');
   const { createBoard, openBoard } = usePalette();
   const navigate = useNavigate();
 
   const handleCreate = () => {
     if (name.trim()) {
-      const board = createBoard(name.trim(), template);
+      const board = createBoard(name.trim(), template, color);
       openBoard(board.id);
       setName('');
       setTemplate('blank');
@@ -82,6 +84,11 @@ export const CreateBoardDialog = ({ open, onOpenChange }: CreateBoardDialogProps
               placeholder="My Awesome Project"
               autoFocus
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="board-color">Board Color</Label>
+            <ColorPicker value={color} onChange={setColor} />
           </div>
 
           <div className="space-y-3">
