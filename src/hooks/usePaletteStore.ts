@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Board, Column, Task, UserSettings, PaletteState } from '@/types/palette';
 import { getSupabaseClient } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 const STORAGE_KEY = 'palette_data';
 

@@ -20,6 +20,7 @@ import {
 import { BottomNav } from '@/components/BottomNav';
 import { usePalette } from '@/contexts/PaletteContext';
 import { getSupabaseClient } from '@/lib/supabase';
+import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
