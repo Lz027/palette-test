@@ -7,6 +7,13 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  // Get the base URL for redirects, ensuring it works on Vercel and locally
+  const getRedirectUrl = () => {
+    let url = window.location.origin;
+    // Ensure it doesn't have a trailing slash
+    return url.replace(/\/$/, "");
+  };
+
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -35,7 +42,7 @@ export function useAuth() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: getRedirectUrl()
       }
     });
     if (error) throw error;
@@ -45,7 +52,7 @@ export function useAuth() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: getRedirectUrl(),
       },
     });
     if (error) throw error;
