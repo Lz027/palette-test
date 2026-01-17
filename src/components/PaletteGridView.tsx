@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-interface MondayTableViewProps {
+interface PaletteGridViewProps {
   board: Board;
 }
 
@@ -24,7 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
   'Working': 'bg-orange-400 hover:bg-orange-500',
 };
 
-export function MondayTableView({ board }: MondayTableViewProps) {
+export function PaletteGridView({ board }: PaletteGridViewProps) {
   const { getBoardGroups, getGroupTasks, getBoardColumns, createTask, updateTask, createGroup, deleteGroup, deleteTask } = usePalette();
   const groups = getBoardGroups(board.id);
   const columns = getBoardColumns(board.id);

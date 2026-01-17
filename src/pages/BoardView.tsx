@@ -3,7 +3,7 @@ import { usePalette } from '@/contexts/PaletteContext';
 import { BoardViewHeader } from '@/components/BoardViewHeader';
 import { KanbanView } from '@/components/KanbanView';
 import { TableView } from '@/components/TableView';
-import { MondayTableView } from '@/components/MondayTableView';
+import { PaletteGridView } from '@/components/PaletteGridView';
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LayoutGrid, List, Table as TableIcon, Search, Filter, ArrowUpDown } from 'lucide-react';
@@ -15,7 +15,7 @@ const BoardView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { boards, getBoardColumns, getColumnTasks, openBoard } = usePalette();
-  const [view, setView] = useState<'kanban' | 'table' | 'monday'>('monday');
+  const [view, setView] = useState<'kanban' | 'table' | 'palette'>('palette');
   const [searchQuery, setSearchQuery] = useState('');
 
   const board = boards.find(b => b.id === id);
@@ -52,7 +52,7 @@ const BoardView = () => {
           <div className="flex items-center gap-4">
             <Tabs value={view} onValueChange={(v) => setView(v as any)} className="w-fit">
               <TabsList className="bg-muted/50 p-1">
-                <TabsTrigger value="monday" className="data-[state=active]:bg-background">
+                <TabsTrigger value="palette" className="data-[state=active]:bg-background">
                   <TableIcon className="w-4 h-4 mr-2" />
                   Main Table
                 </TabsTrigger>
@@ -99,8 +99,8 @@ const BoardView = () => {
                 transition={{ duration: 0.2 }}
                 className="h-full"
               >
-                {view === 'monday' ? (
-                  <MondayTableView board={board} />
+                {view === 'palette' ? (
+                  <PaletteGridView board={board} />
                 ) : view === 'kanban' ? (
                   <KanbanView columns={columns} getColumnTasks={getColumnTasks} />
                 ) : (

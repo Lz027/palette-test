@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import BoardView from "./pages/BoardView";
 import AiTools from "./pages/AiTools";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Intro from "./pages/Intro";
 import { Loader2 } from "lucide-react";
@@ -41,7 +42,6 @@ const AppRoutes = () => {
     );
   }
 
-  // Auth is bypassed in useAuth, so user will always be present for testing
   return (
     <Routes>
       <Route 
@@ -55,6 +55,7 @@ const AppRoutes = () => {
       <Route path="/board/:id" element={<BoardView />} />
       <Route path="/ai" element={<AiTools />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
