@@ -23,9 +23,9 @@ export function AccountNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-primary/20">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.profileImageUrl || undefined} />
+            <AvatarImage src={user.user_metadata?.avatar_url || undefined} />
             <AvatarFallback className="bg-primary/10 text-primary text-xs">
-              {user.firstName?.[0] || user.email?.[0] || "U"}
+              {user.user_metadata?.full_name?.[0] || user.email?.[0] || "U"}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -33,7 +33,7 @@ export function AccountNav() {
       <DropdownMenuContent align="end" className="w-56 p-2 rounded-xl border-border/50 backdrop-blur-md bg-background/80">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.firstName} {user.lastName}</p>
+            <p className="text-sm font-medium leading-none">{user.user_metadata?.full_name || 'User'}</p>
             <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
