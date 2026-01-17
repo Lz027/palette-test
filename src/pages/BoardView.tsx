@@ -2,8 +2,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Plus, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus, Sparkles, LayoutGrid, Table as TableIcon } from 'lucide-react';
 import { Column } from '@/components/Column';
+import { TableView } from '@/components/TableView';
 import { usePalette } from '@/contexts/PaletteContext';
 import {
   DndContext,
@@ -19,12 +20,16 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { TaskCard } from '@/components/TaskCard';
+import { cn } from '@/lib/utils';
+
+type ViewMode = 'table' | 'kanban';
 
 const BoardView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { boards, getBoardColumns, getColumnTasks, createColumn, moveTask, tasks, hasAiKeys } = usePalette();
   
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnName, setNewColumnName] = useState('');
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
@@ -91,7 +96,7 @@ const BoardView = () => {
 
   if (!board) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center animate-fade-in">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Board not found</h2>
           <Button onClick={() => navigate('/')}>Go Home</Button>
@@ -103,86 +108,127 @@ const BoardView = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="px-4 py-4 border-b border-border/50 flex items-center gap-3">
+      <header className="px-4 py-4 border-b border-border/50 flex items-center gap-3 animate-fade-in">
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={() => navigate('/')}
-          className="shrink-0"
+          className="shrink-0 hover:scale-105 transition-transform"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-lg font-semibold truncate flex-1">{board.name}</h1>
+        
+        {/* View Mode Toggle */}
+        <div className="flex items-center bg-muted/50 rounded-lg p-1">
+          <Button
+            variant={viewMode === 'table' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('table')}
+            className={cn(
+              "h-8 px-3 transition-all duration-200",
+              viewMode === 'table' && "shadow-sm"
+            )}
+          >
+            <TableIcon className="h-4 w-4 mr-1.5" />
+            Table
+          </Button>
+          <Button
+            variant={viewMode === 'kanban' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('kanban')}
+            className={cn(
+              "h-8 px-3 transition-all duration-200",
+              viewMode === 'kanban' && "shadow-sm"
+            )}
+          >
+            <LayoutGrid className="h-4 w-4 mr-1.5" />
+            Board
+          </Button>
+        </div>
+
         {hasAiKeys && (
-          <Button variant="outline" size="sm" className="text-primary border-primary/30">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-primary border-primary/30 hover:bg-primary/10 transition-all duration-200 hover:scale-105"
+          >
             <Sparkles className="h-4 w-4 mr-1" />
             Ask Pal
           </Button>
         )}
       </header>
 
-      {/* Columns */}
+      {/* Content */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex-1 overflow-x-auto p-4">
-          <div className="flex gap-4 h-full pb-4">
-            {columns.map(column => (
-              <Column
-                key={column.id}
-                column={column}
-                tasks={getColumnTasks(column.id)}
-              />
-            ))}
-            
-            {/* Add Column */}
-            <div className="flex-shrink-0 w-72">
-              {isAddingColumn ? (
-                <div className="bg-muted/30 rounded-lg p-3 space-y-2">
-                  <Input
-                    value={newColumnName}
-                    onChange={(e) => setNewColumnName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleAddColumn();
-                      if (e.key === 'Escape') {
-                        setNewColumnName('');
-                        setIsAddingColumn(false);
-                      }
-                    }}
-                    placeholder="Column name..."
-                    autoFocus
-                  />
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={handleAddColumn} className="flex-1">
-                      Add
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => {
-                        setNewColumnName('');
-                        setIsAddingColumn(false);
+        <div className="flex-1 overflow-auto p-4">
+          {viewMode === 'table' ? (
+            <TableView 
+              columns={columns} 
+              getColumnTasks={getColumnTasks}
+            />
+          ) : (
+            /* Kanban View */
+            <div className="flex gap-4 h-full pb-4 animate-fade-in">
+              {columns.map(column => (
+                <Column
+                  key={column.id}
+                  column={column}
+                  tasks={getColumnTasks(column.id)}
+                />
+              ))}
+              
+              {/* Add Column */}
+              <div className="flex-shrink-0 w-72">
+                {isAddingColumn ? (
+                  <div className="bg-muted/30 rounded-lg p-3 space-y-2 animate-scale-in">
+                    <Input
+                      value={newColumnName}
+                      onChange={(e) => setNewColumnName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleAddColumn();
+                        if (e.key === 'Escape') {
+                          setNewColumnName('');
+                          setIsAddingColumn(false);
+                        }
                       }}
-                    >
-                      Cancel
-                    </Button>
+                      placeholder="Column name..."
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleAddColumn} className="flex-1">
+                        Add
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => {
+                          setNewColumnName('');
+                          setIsAddingColumn(false);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <Button
-                  variant="outline"
-                  className="w-full h-12 border-dashed border-2 text-muted-foreground hover:text-foreground"
-                  onClick={() => setIsAddingColumn(true)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Column
-                </Button>
-              )}
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 border-dashed border-2 text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-200"
+                    onClick={() => setIsAddingColumn(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Column
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <DragOverlay>
