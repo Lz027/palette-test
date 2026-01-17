@@ -19,26 +19,7 @@ const Dashboard = () => {
   const activeBoards = getActiveBoards();
   const focusBoard = getCurrentFocusBoard();
 
-  const features = [
-    {
-      icon: Layout,
-      title: "Table & Board Views",
-      description: "Organize tasks your way",
-      color: "from-palette-purple to-palette-purple-light"
-    },
-    {
-      icon: Zap,
-      title: "Drag & Drop",
-      description: "Effortless task management",
-      color: "from-palette-red to-orange-400"
-    },
-    {
-      icon: Sparkles,
-      title: "AI Assistant",
-      description: "Meet Pal, your helper",
-      color: "from-blue-500 to-cyan-400"
-    }
-  ];
+
 
   return (
     <div className="min-h-screen bg-background pb-20 selection:bg-primary/10">
@@ -125,27 +106,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <AnimatedSection 
-              key={feature.title} 
-              delay={0.5 + index * 0.1} 
-              direction={index === 0 ? "left" : index === 2 ? "right" : "up"}
-            >
-              <div className="group p-6 rounded-3xl bg-card border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg cursor-default h-full">
-                <div className={cn(
-                  "w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-gradient-to-br transition-transform duration-300 group-hover:scale-110 shadow-sm",
-                  feature.color
-                )}>
-                  <feature.icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="font-semibold text-foreground text-base mb-1">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
-              </div>
-            </AnimatedSection>
-          ))}
-        </div>
+
       </div>
 
       <CreateBoardDialog 

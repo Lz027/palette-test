@@ -6,7 +6,7 @@ import { TableView } from '@/components/TableView';
 import { PaletteGridView } from '@/components/PaletteGridView';
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LayoutGrid, List, Table as TableIcon, Search, Filter, ArrowUpDown } from 'lucide-react';
+import { LayoutGrid, List, Table as TableIcon, Search, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -72,15 +72,7 @@ const BoardView = () => {
               <Plus className="w-4 h-4 mr-2" />
               Add Group
             </Button>
-            <div className="h-6 w-[1px] bg-border mx-2" />
-            <Button variant="ghost" size="sm" className="text-muted-foreground">
-              <Filter className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
-            <Button variant="ghost" size="sm" className="text-muted-foreground">
-              <ArrowUpDown className="w-4 h-4 mr-2" />
-              Sort
-            </Button>
+
           </div>
 
           <div className="relative w-64">
@@ -129,12 +121,7 @@ const BoardView = () => {
             className="border-none bg-transparent focus-visible:ring-0 text-lg h-12"
           />
           <div className="h-8 w-[1px] bg-border mx-2" />
-          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl">
-            <Filter className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl">
-            <ArrowUpDown className="h-5 w-5" />
-          </Button>
+
         </div>
       </div>
       <PalAssistant />

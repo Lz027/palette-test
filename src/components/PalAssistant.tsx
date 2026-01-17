@@ -3,7 +3,7 @@ import { usePalette } from '@/contexts/PaletteContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Brain, Send, Sparkles, X, Minimize2, Maximize2, Bot, User } from 'lucide-react';
+import { Send, Sparkles, X, Minimize2, Maximize2, Bot, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -89,9 +89,9 @@ export function PalAssistant() {
     return (
       <Button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-2xl shadow-2xl animate-bounce-slow z-50 bg-primary hover:bg-primary/90"
+        className="fixed bottom-6 right-6 h-12 w-12 rounded-xl shadow-lg z-50 bg-gradient-to-br from-primary to-primary/80 hover:shadow-xl transition-all hover:scale-105"
       >
-        <Brain className="h-7 w-7 text-white" />
+        <Sparkles className="h-5 w-5 text-white" />
       </Button>
     );
   }
@@ -99,14 +99,14 @@ export function PalAssistant() {
   return (
     <Card className={cn(
       "fixed right-6 bottom-6 z-50 shadow-2xl border-border/50 transition-all duration-300 flex flex-col overflow-hidden rounded-2xl",
-      isMinimized ? "h-14 w-64" : "h-[500px] w-[380px]"
+      isMinimized ? "h-12 w-64" : "h-[480px] w-[360px]"
     )}>
-      <CardHeader className="p-4 border-b bg-primary/5 flex flex-row items-center justify-between space-y-0">
+      <CardHeader className="p-3 border-b bg-muted/30 flex flex-row items-center justify-between space-y-0">
         <div className="flex items-center gap-2">
-          <div className="bg-primary/10 p-1.5 rounded-lg">
-            <Bot className="h-5 w-5 text-primary" />
+          <div className="bg-gradient-to-br from-primary/20 to-primary/10 p-1.5 rounded-lg">
+            <Sparkles className="h-4 w-4 text-primary" />
           </div>
-          <CardTitle className="text-base font-bold">Pal Assistant</CardTitle>
+          <CardTitle className="text-sm font-semibold">Pal</CardTitle>
         </div>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsMinimized(!isMinimized)}>
