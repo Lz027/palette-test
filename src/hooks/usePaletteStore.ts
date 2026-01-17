@@ -256,6 +256,15 @@ export const usePaletteStore = () => {
     [state.groups, state.tasks]
   );
 
+  const getCurrentFocusBoard = useCallback(() => {
+    const active = getActiveBoards();
+    return active.length > 0 ? active[0] : null;
+  }, [getActiveBoards]);
+
+  const hasAiKeys = useCallback(() => {
+    return !!(state.settings.openaiKey || state.settings.geminiKey);
+  }, [state.settings]);
+
   return {
     ...state,
     createBoard,
@@ -276,6 +285,8 @@ export const usePaletteStore = () => {
     getActiveBoards,
     getBoardTaskCount,
     getBoardProgress,
+    getCurrentFocusBoard,
+    hasAiKeys,
     updateSettings: (updates: Partial<UserSettings>) => setState(prev => ({ ...prev, settings: { ...prev.settings, ...updates } })),
   };
 };

@@ -6,7 +6,7 @@ import { TableView } from '@/components/TableView';
 import { PaletteGridView } from '@/components/PaletteGridView';
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LayoutGrid, List, Table as TableIcon, Search, Plus } from 'lucide-react';
+import { LayoutGrid, List, Table as TableIcon, Search, Plus, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { PalAssistant } from '@/components/PalAssistant';
 const BoardView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { boards, getBoardColumns, getColumnTasks, openBoard } = usePalette();
+  const { boards, getBoardColumns, getColumnTasks, openBoard, createGroup } = usePalette();
   const [view, setView] = useState<'kanban' | 'table' | 'palette'>('palette');
   const [searchQuery, setSearchQuery] = useState('');
 

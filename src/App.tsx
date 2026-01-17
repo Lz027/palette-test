@@ -13,7 +13,7 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Intro from "./pages/Intro";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +26,8 @@ const queryClient = new QueryClient({
 
 const AppRoutes = () => {
   const { shouldShowIntro } = useIntroScreen();
-  const { user, isLoading } = useAuth();
+  const auth = useAuth();
+  const { user, isLoading } = auth || { user: null, isLoading: true };
 
   if (isLoading) {
     return (
