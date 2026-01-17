@@ -23,7 +23,12 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 262 83% 58%;
-    --radius: 0.75rem;
+    --radius: 1.5rem;
+
+    /* Palette Pastel Colors */
+    --palette-red: 355 100% 81%; /* #FF9AA2 */
+    --palette-purple: 275 80% 43%; /* #6A0DAD */
+    --palette-purple-light: 275 80% 60%;
   }
 
   .dark {
@@ -60,11 +65,11 @@
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-palette-purple to-palette-red;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-palette-red via-palette-purple to-palette-purple-light;
 }
 
 .gradient-palette {
-  @apply bg-gradient-to-br from-primary via-palette-purple to-palette-red;
+  @apply bg-gradient-to-br from-palette-red via-palette-purple to-palette-purple-light;
 }
 
 .animate-fade-in {

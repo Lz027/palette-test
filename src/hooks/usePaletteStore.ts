@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Board, Column, Task, UserSettings, PaletteState } from '@/types/palette';
-import { getSupabaseClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 const STORAGE_KEY = 'palette_data';
@@ -58,7 +58,7 @@ export const usePaletteStore = () => {
       archived: false,
       createdAt: new Date().toISOString(),
       templateType,
-      color: '#6366f1',
+      color: '#FF9AA2', // Default to Pastel Red
       icon: templateType === 'kanban' ? 'kanban' : templateType === 'crm' ? 'users' : 'layout-grid',
     };
 
@@ -283,17 +283,11 @@ export const usePaletteStore = () => {
 
   const hasAiKeys = state.settings.openaiKey || state.settings.claudeKey || state.settings.geminiKey;
 
-  const supabase = useMemo(() => 
-    getSupabaseClient(state.settings.supabaseUrl, state.settings.supabaseAnonKey),
-    [state.settings.supabaseUrl, state.settings.supabaseAnonKey]
-  );
-
   const syncToCloud = useCallback(async () => {
     if (!supabase) return;
 
     try {
       // Basic sync logic: Upsert boards, columns, and tasks
-      // In a real app, we'd handle conflicts and deletions better
       const { error: boardsError } = await supabase.from('boards').upsert(state.boards);
       const { error: columnsError } = await supabase.from('columns').upsert(state.columns);
       const { error: tasksError } = await supabase.from('tasks').upsert(state.tasks);
@@ -307,7 +301,7 @@ export const usePaletteStore = () => {
     } catch (error) {
       console.error('Cloud sync failed:', error);
     }
-  }, [supabase, state.boards, state.columns, state.tasks]);
+  }, [state.boards, state.columns, state.tasks]);
 
   return {
     ...state,

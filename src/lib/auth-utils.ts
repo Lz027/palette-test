@@ -7,11 +7,12 @@ export function redirectToLogin(toast?: (options: { title: string; description: 
   if (toast) {
     toast({
       title: "Unauthorized",
-      description: "You are logged out. Logging in again...",
+      description: "You are logged out. Redirecting to login...",
       variant: "destructive",
     });
   }
   setTimeout(() => {
-    window.location.href = "/api/login";
+    // Redirect to root which handles auth state
+    window.location.href = "/";
   }, 500);
 }
