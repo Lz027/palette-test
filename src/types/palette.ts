@@ -11,6 +11,14 @@ export interface Board {
   description?: string;
 }
 
+export interface Group {
+  id: string;
+  boardId: string;
+  name: string;
+  color: string;
+  position: number;
+}
+
 export type ColumnType = 'text' | 'checkbox' | 'file' | 'link' | 'date' | 'tags' | 'number' | 'select' | 'status';
 
 export interface Column {
@@ -26,13 +34,15 @@ export interface Column {
 
 export interface Task {
   id: string;
-  columnId: string;
+  columnId: string; // Legacy support for Kanban
+  groupId?: string; // New support for Monday-style grouping
   title: string;
   description: string;
   dueDate: string | null;
   tags: string[];
   position: number;
   createdAt: string;
+  status?: string; // Quick status access
   data?: Record<string, any>;
 }
 
@@ -47,6 +57,7 @@ export interface UserSettings {
 
 export interface PaletteState {
   boards: Board[];
+  groups: Group[];
   columns: Column[];
   tasks: Task[];
   settings: UserSettings;
