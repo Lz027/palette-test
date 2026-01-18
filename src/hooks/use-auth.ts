@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -8,10 +8,21 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  // Helper to get the correct redirect URL
+  const getRedirectUrl = () => {
+    // In production, we want to be very explicit about the URL
+    const url = window.location.origin;
+    // Ensure no trailing slash for consistency
+    return url.endsWith('/') ? url.slice(0, -1) : url;
+  };
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      setIsLoading(false);
+    }).catch(err => {
+      console.error("Session error:", err);
       setIsLoading(false);
     });
 
@@ -26,10 +37,13 @@ export function useAuth() {
 
   const loginWithGithub = async () => {
     try {
+      const redirectTo = getRedirectUrl();
+      console.log("GitHub Login Redirecting to:", redirectTo);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
-          redirectTo: window.location.origin,
+          redirectTo,
         },
       });
       if (error) throw error;
@@ -40,10 +54,13 @@ export function useAuth() {
 
   const loginWithEmail = async (email: string) => {
     try {
+      const emailRedirectTo = getRedirectUrl();
+      console.log("Email Login Redirecting to:", emailRedirectTo);
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo,
         },
       });
       if (error) throw error;
