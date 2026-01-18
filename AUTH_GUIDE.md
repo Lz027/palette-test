@@ -19,17 +19,27 @@ Supabase needs to know your Vercel URL to redirect users correctly.
 
 ---
 
-## 2. GitHub OAuth Fix (Fixes the 404)
-If GitHub redirects to a 404, your GitHub App settings are likely pointing to the wrong place.
+## 2. Create & Connect GitHub OAuth (Fixes the 404)
+Since you don't have an OAuth app yet, here is how to create one:
 
+### A. Create the App on GitHub
 1.  Go to your [GitHub Developer Settings](https://github.com/settings/developers).
-2.  Find your OAuth App for PALETTE.
-3.  **Homepage URL**: Set to `https://palette-test-murex.vercel.app`.
-4.  **Authorization callback URL**: This **MUST** come from Supabase.
-    *   In Supabase, go to **Authentication** > **Providers** > **GitHub**.
+2.  Click **New OAuth App**.
+3.  **Application Name**: `PALETTE`
+4.  **Homepage URL**: `https://palette-test-murex.vercel.app`
+5.  **Authorization callback URL**: 
+    *   Go to your [Supabase Dashboard](https://supabase.com/dashboard).
+    *   Go to **Authentication** > **Providers** > **GitHub**.
     *   Copy the **Callback URL** shown there (it looks like `https://mmmfebmyxmcyirncalqw.supabase.co/auth/v1/callback`).
-    *   Paste that into GitHub's "Authorization callback URL" field.
-5.  Click **Update application**.
+    *   Paste this into the GitHub field.
+6.  Click **Register application**.
+
+### B. Connect to Supabase
+1.  On your new GitHub App page, copy the **Client ID**.
+2.  Click **Generate a new client secret** and copy that too.
+3.  Go back to **Supabase** > **Authentication** > **Providers** > **GitHub**.
+4.  Paste the **Client ID** and **Client Secret**.
+5.  Click **Save**.
 
 ---
 
