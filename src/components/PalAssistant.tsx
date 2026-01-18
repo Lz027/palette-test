@@ -12,6 +12,13 @@ interface Message {
   content: string;
 }
 
+const DualSparkIcon = ({ className }: { className?: string }) => (
+  <div className={cn("relative flex items-center justify-center", className)}>
+    <Sparkles className="h-full w-full text-palette-purple animate-pulse" />
+    <Sparkles className="absolute h-3/5 w-3/5 text-palette-red -top-1 -right-1 animate-pulse [animation-delay:0.5s]" />
+  </div>
+);
+
 export function PalAssistant() {
   const { settings } = usePalette();
   const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +52,6 @@ export function PalAssistant() {
       let responseContent = "";
       
       if (settings.openaiKey) {
-        // OpenAI Implementation
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -62,7 +68,6 @@ export function PalAssistant() {
         if (data.error) throw new Error(data.error.message);
         responseContent = data.choices[0].message.content;
       } else if (settings.geminiKey) {
-        // Gemini Implementation
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${settings.geminiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -89,30 +94,30 @@ export function PalAssistant() {
     return (
       <Button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-12 w-12 rounded-xl shadow-lg z-50 bg-gradient-to-br from-primary to-primary/80 hover:shadow-xl transition-all hover:scale-105"
+        className="fixed top-6 right-6 h-12 w-12 rounded-2xl shadow-lg z-[60] bg-background border border-border/50 hover:shadow-xl transition-all hover:scale-105 group"
       >
-        <Sparkles className="h-5 w-5 text-white" />
+        <DualSparkIcon className="h-6 w-6" />
       </Button>
     );
   }
 
   return (
     <Card className={cn(
-      "fixed right-6 bottom-6 z-50 shadow-2xl border-border/50 transition-all duration-300 flex flex-col overflow-hidden rounded-2xl",
-      isMinimized ? "h-12 w-64" : "h-[480px] w-[360px]"
+      "fixed right-6 top-6 z-[60] shadow-2xl border-border/50 transition-all duration-300 flex flex-col overflow-hidden rounded-[2rem]",
+      isMinimized ? "h-14 w-64" : "h-[500px] w-[calc(100vw-3rem)] sm:w-[380px]"
     )}>
-      <CardHeader className="p-3 border-b bg-muted/30 flex flex-row items-center justify-between space-y-0">
-        <div className="flex items-center gap-2">
-          <div className="bg-gradient-to-br from-primary/20 to-primary/10 p-1.5 rounded-lg">
-            <Sparkles className="h-4 w-4 text-primary" />
+      <CardHeader className="p-4 border-b bg-muted/30 flex flex-row items-center justify-between space-y-0">
+        <div className="flex items-center gap-3">
+          <div className="bg-background p-2 rounded-xl border border-border/50">
+            <DualSparkIcon className="h-4 w-4" />
           </div>
-          <CardTitle className="text-sm font-semibold">Pal</CardTitle>
+          <CardTitle className="text-sm font-bold">Pal Assistant</CardTitle>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsMinimized(!isMinimized)}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsOpen(false)}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setIsOpen(false)}>
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -123,18 +128,18 @@ export function PalAssistant() {
           <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar" ref={scrollRef}>
             {messages.map((msg, i) => (
               <div key={i} className={cn(
-                "flex gap-3 max-w-[85%]",
+                "flex gap-3 max-w-[90%]",
                 msg.role === 'user' ? "ml-auto flex-row-reverse" : ""
               )}>
                 <div className={cn(
-                  "h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0",
-                  msg.role === 'user' ? "bg-primary/10" : "bg-muted"
+                  "h-8 w-8 rounded-xl flex items-center justify-center flex-shrink-0 border border-border/50",
+                  msg.role === 'user' ? "bg-palette-purple/10" : "bg-muted"
                 )}>
-                  {msg.role === 'user' ? <User className="h-4 w-4 text-primary" /> : <Bot className="h-4 w-4" />}
+                  {msg.role === 'user' ? <User className="h-4 w-4 text-palette-purple" /> : <Bot className="h-4 w-4" />}
                 </div>
                 <div className={cn(
-                  "p-3 rounded-2xl text-sm",
-                  msg.role === 'user' ? "bg-primary text-white rounded-tr-none" : "bg-muted/50 rounded-tl-none"
+                  "p-3 rounded-2xl text-sm leading-relaxed",
+                  msg.role === 'user' ? "bg-palette-purple text-white rounded-tr-none" : "bg-muted/50 rounded-tl-none"
                 )}>
                   {msg.content}
                 </div>
@@ -142,7 +147,7 @@ export function PalAssistant() {
             ))}
             {isLoading && (
               <div className="flex gap-3 max-w-[85%]">
-                <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center border border-border/50">
                   <Bot className="h-4 w-4" />
                 </div>
                 <div className="bg-muted/50 p-3 rounded-2xl rounded-tl-none">
@@ -162,20 +167,20 @@ export function PalAssistant() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                className="pr-10 rounded-xl h-11"
+                className="pr-10 rounded-2xl h-12 bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary/20"
               />
               <Button 
                 size="icon" 
                 variant="ghost" 
                 onClick={handleSend}
                 disabled={isLoading || !input.trim()}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-primary"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 text-palette-purple hover:bg-transparent"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
               </Button>
             </div>
-            <p className="text-[10px] text-center text-muted-foreground mt-2 flex items-center justify-center gap-1">
-              <Sparkles className="h-3 w-3" />
+            <p className="text-[10px] text-center text-muted-foreground mt-3 flex items-center justify-center gap-1 font-medium">
+              <Sparkles className="h-3 w-3 text-palette-purple" />
               Powered by your {settings.openaiKey ? "OpenAI" : "Gemini"} Key
             </p>
           </div>

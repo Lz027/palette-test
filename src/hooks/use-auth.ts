@@ -1,49 +1,73 @@
 import { useState, useEffect } from 'react';
-import { User } from '@supabase/supabase-js';
-
-// MOCK USER for temporary testing bypass
-const MOCK_USER: User = {
-  id: 'test-user-id',
-  aud: 'authenticated',
-  role: 'authenticated',
-  email: 'test@example.com',
-  app_metadata: {},
-  user_metadata: { full_name: 'Test User' },
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-};
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 export function useAuth() {
-  // Set user to MOCK_USER immediately to bypass login
-  const [user, setUser] = useState<User | null>(MOCK_USER);
-  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // Keep user as MOCK_USER
-    setUser(MOCK_USER);
-    setIsLoading(false);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const loginWithGithub = async () => {
-    console.log("GitHub login bypassed");
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const loginWithEmail = async (email: string) => {
-    console.log("Email login bypassed for:", email);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+      toast.success("Login link sent to your email!");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const logout = async () => {
-    // For testing, we can just clear the mock user if needed, 
-    // but usually we want to stay "logged in" for this bypass
-    setUser(null);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   return {
     user,
     isLoading,
     error,
-    isAuthenticated: true, // Always true for bypass
+    isAuthenticated: !!user,
     loginWithGithub,
     loginWithEmail,
     logout,
