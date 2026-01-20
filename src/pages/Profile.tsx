@@ -86,10 +86,10 @@ const Profile = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-palette-purple" />
-                    AI Assistant (Pal)
+                    <Sparkles className="h-5 w-5 text-[#FF6B6B]" />
+                    Pal (Gemini 2.5)
                   </CardTitle>
-                  <CardDescription>Bring your own API keys to power Pal</CardDescription>
+                  <CardDescription>Power your assistant with Gemini 2.5 Flash</CardDescription>
                 </div>
                 <Switch 
                   checked={settings.aiEnabled} 
@@ -99,20 +99,6 @@ const Profile = () => {
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider ml-1">OpenAI API Key</Label>
-                  <div className="relative">
-                    <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      type="password" 
-                      placeholder="sk-..." 
-                      value={settings.openaiKey}
-                      onChange={(e) => updateSettings({ openaiKey: e.target.value })}
-                      className="pl-10 h-12 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-palette-purple/20"
-                    />
-                  </div>
-                </div>
-
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase tracking-wider ml-1">Gemini API Key</Label>
                   <div className="relative">
@@ -131,9 +117,9 @@ const Profile = () => {
               <Button 
                 onClick={handleSaveKeys} 
                 disabled={isSaving}
-                className="w-full h-12 rounded-2xl bg-palette-purple hover:bg-palette-purple/90 font-bold"
+                className="w-full h-12 rounded-2xl bg-black hover:bg-black/90 text-white font-bold shadow-lg"
               >
-                {isSaving ? "Saving..." : "Save API Keys"}
+                {isSaving ? "Saving..." : "Connect Gemini 2.5"}
               </Button>
               
               <p className="text-[10px] text-center text-muted-foreground font-medium">
