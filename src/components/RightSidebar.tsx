@@ -223,65 +223,58 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
 
           <Separator className="my-6 opacity-50" />
 
-          {/* AI Assistant in Sidebar */}
+          {/* Pal AI Assistant Tab */}
           {!collapsed && (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                <Sparkles className="h-3 w-3 text-palette-purple" />
-                AI Assistant
-              </div>
-              <div className="px-1">
-                <button 
-                  className="w-full text-left p-3 rounded-2xl bg-gradient-to-br from-palette-purple/10 to-palette-red/10 border border-palette-purple/20 hover:border-palette-purple/40 transition-all group"
-                  onClick={() => navigate('/ai-tools')}
-                >
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-6 h-6 rounded-lg bg-palette-purple flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                      <Sparkles className="h-3 w-3 text-white" />
-                    </div>
-                    <span className="text-xs font-bold text-foreground">Talk to Pal</span>
+            <div className="mb-4">
+              <button 
+                className="w-full text-left p-3 rounded-2xl bg-black border border-border/50 hover:border-primary/30 transition-all group relative overflow-hidden"
+                onClick={() => navigate('/ai')}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative flex items-center justify-center w-8 h-8">
+                    <Sparkles className="h-5 w-5 text-[#FF6B6B] absolute -top-1 -left-1" />
+                    <Sparkles className="h-4 w-4 text-[#8A2BE2] absolute -bottom-1 -right-1" />
                   </div>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">
-                    {hasAiKeys() 
-                      ? "Ready to organize your workflow with AI." 
-                      : "Add API keys in settings to unlock AI power."
-                    }
-                  </p>
-                </button>
-              </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-xs font-bold text-white truncate">Talk to Pal</span>
+                    </div>
+                    <p className="text-[9px] font-medium text-gray-400 uppercase tracking-tighter truncate">AI Assistant</p>
+                  </div>
+                </div>
+              </button>
             </div>
           )}
-        </ScrollArea>
 
-        {/* Shoseki AI Directory */}
-        <div className="p-3 bg-muted/5 border-t border-border/50">
-          <a 
-            href="https://shoseki.vercel.app" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className={cn(
-              "flex items-center gap-3 p-2.5 rounded-2xl bg-background border border-border/50 hover:border-primary/30 hover:bg-primary/[0.02] transition-all shadow-sm group",
-              collapsed && "justify-center"
-            )}
-          >
-            <div className="h-8 w-8 rounded-lg overflow-hidden shrink-0 shadow-sm border border-border/20">
-              <img 
-                src="/shoseki-logo.png" 
-                alt="Shoseki" 
-                className="h-full w-full object-cover"
-              />
-            </div>
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-1">
-                  <span className="text-xs font-bold text-foreground truncate">Shoseki</span>
-                  <ExternalLink className="h-2.5 w-2.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-tighter truncate">AI Directory</p>
+          {/* Shoseki AI Directory */}
+          <div className="mb-6">
+            <a 
+              href="https://shoseki.vercel.app" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={cn(
+                "flex items-center gap-3 p-3 rounded-2xl bg-black border border-border/50 hover:border-primary/30 transition-all group",
+                collapsed && "justify-center"
+              )}
+            >
+              <div className="h-8 w-8 rounded-lg overflow-hidden shrink-0 shadow-sm border border-white/10 bg-white">
+                <img 
+                  src="/shoseki-logo.png" 
+                  alt="Shoseki" 
+                  className="h-full w-full object-cover"
+                />
               </div>
-            )}
-          </a>
-        </div>
+              {!collapsed && (
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-xs font-bold text-white truncate">Shoseki</span>
+                    <ExternalLink className="h-2.5 w-2.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-[9px] font-medium text-gray-400 uppercase tracking-tighter truncate">AI Directory</p>
+                </div>
+              )}
+            </a>
+          </div>
       </aside>
 
       <CreateBoardDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />

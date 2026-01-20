@@ -64,117 +64,40 @@ const Settings = () => {
         </header>
 
         <main className="max-w-2xl mx-auto px-6 py-8 space-y-6">
-          {/* API Keys Section */}
-          <section>
-            <div className="flex items-center gap-2 mb-4">
-              <Key className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-semibold">AI API Keys</h2>
-            </div>
-            
-            <Card className="p-4 space-y-4">
-              <div className="flex items-start gap-2 p-3 bg-primary/5 border border-primary/10 rounded-lg">
-                <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <p className="text-xs text-muted-foreground">
-                  Add your API keys to enable AI-powered features like task generation and summaries.
-                </p>
-              </div>
-
-              {/* OpenAI */}
-              <div className="space-y-2">
-                <Label htmlFor="openai-key" className="text-sm">OpenAI API Key</Label>
-                <div className="relative">
-                  <Input
-                    id="openai-key"
-                    type={showOpenAI ? 'text' : 'password'}
-                    value={settings.openaiKey}
-                    onChange={(e) => updateSettings({ openaiKey: e.target.value })}
-                    placeholder="sk-..."
-                    className="pr-10 h-9 text-sm"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0 h-full px-3"
-                    onClick={() => setShowOpenAI(!showOpenAI)}
-                  >
-                    {showOpenAI ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Claude */}
-              <div className="space-y-2">
-                <Label htmlFor="claude-key" className="text-sm">Claude API Key</Label>
-                <div className="relative">
-                  <Input
-                    id="claude-key"
-                    type={showClaude ? 'text' : 'password'}
-                    value={settings.claudeKey}
-                    onChange={(e) => updateSettings({ claudeKey: e.target.value })}
-                    placeholder="sk-ant-..."
-                    className="pr-10 h-9 text-sm"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0 h-full px-3"
-                    onClick={() => setShowClaude(!showClaude)}
-                  >
-                    {showClaude ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Gemini */}
-              <div className="space-y-2">
-                <Label htmlFor="gemini-key" className="text-sm">Gemini API Key</Label>
-                <div className="relative">
-                  <Input
-                    id="gemini-key"
-                    type={showGemini ? 'text' : 'password'}
-                    value={settings.geminiKey}
-                    onChange={(e) => updateSettings({ geminiKey: e.target.value })}
-                    placeholder="AI..."
-                    className="pr-10 h-9 text-sm"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0 h-full px-3"
-                    onClick={() => setShowGemini(!showGemini)}
-                  >
-                    {showGemini ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="ai-enabled" className="text-sm">Enable AI Features</Label>
-                  <p className="text-xs text-muted-foreground">Show AI buttons in board view</p>
-                </div>
-                <Switch
-                  id="ai-enabled"
-                  checked={settings.aiEnabled}
-                  onCheckedChange={(checked) => updateSettings({ aiEnabled: checked })}
-                />
-              </div>
-            </Card>
-          </section>
-
           {/* Data Section */}
           <section>
             <h2 className="text-lg font-semibold mb-4">Data Management</h2>
             
-            <Card className="p-4 space-y-3">
+            <Card className="p-4 space-y-3 rounded-[2rem]">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <Label className="text-sm font-bold">Theme Mode</Label>
+                  <p className="text-xs text-muted-foreground">Toggle between dark and light appearance</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="rounded-xl"
+                  onClick={() => {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    if (isDark) {
+                      document.documentElement.classList.remove('dark');
+                      localStorage.setItem('theme', 'light');
+                    } else {
+                      document.documentElement.classList.add('dark');
+                      localStorage.setItem('theme', 'dark');
+                    }
+                  }}
+                >
+                  Switch Theme
+                </Button>
+              </div>
+              
+              <Separator />
+
               <Button 
                 variant="outline" 
-                className="w-full justify-start h-10"
+                className="w-full justify-start h-10 rounded-xl"
                 onClick={handleExport}
               >
                 <Download className="h-4 w-4 mr-2" />
