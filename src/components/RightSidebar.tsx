@@ -246,35 +246,37 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
             </div>
           )}
 
-          {/* Shoseki AI Directory */}
-          <div className="mb-6">
-            <a 
-              href="https://shoseki.vercel.app" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={cn(
-                "flex items-center gap-3 p-3 rounded-2xl bg-black border border-border/50 hover:border-primary/30 transition-all group",
-                collapsed && "justify-center"
-              )}
-            >
-              <div className="h-8 w-8 rounded-lg overflow-hidden shrink-0 shadow-sm border border-white/10 bg-white">
-                <img 
-                  src="/shoseki-logo.png" 
-                  alt="Shoseki" 
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              {!collapsed && (
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-xs font-bold text-white truncate">Shoseki</span>
-                    <ExternalLink className="h-2.5 w-2.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                  <p className="text-[9px] font-medium text-gray-400 uppercase tracking-tighter truncate">AI Directory</p>
+        </ScrollArea>
+
+        {/* Shoseki AI Directory */}
+        <div className="p-3 bg-muted/5 border-t border-border/50">
+          <a 
+            href="https://shoseki.vercel.app" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={cn(
+              "flex items-center gap-3 p-3 rounded-2xl bg-black border border-border/50 hover:border-primary/30 transition-all group",
+              collapsed && "justify-center"
+            )}
+          >
+            <div className="h-8 w-8 rounded-lg overflow-hidden shrink-0 shadow-sm border border-white/10 bg-white">
+              <img 
+                src="/shoseki-logo.png" 
+                alt="Shoseki" 
+                className="h-full w-full object-cover"
+              />
+            </div>
+            {!collapsed && (
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-xs font-bold text-white truncate">Shoseki</span>
+                  <ExternalLink className="h-2.5 w-2.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-              )}
-            </a>
-          </div>
+                <p className="text-[9px] font-medium text-gray-400 uppercase tracking-tighter truncate">AI Directory</p>
+              </div>
+            )}
+          </a>
+        </div>
       </aside>
 
       <CreateBoardDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
