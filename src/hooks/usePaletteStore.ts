@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Board, Group, Column, Task, UserSettings, PaletteState } from '@/types/palette';
+import { Board, Group, Column, Task, UserSettings, PaletteState, BoardTemplate } from '@/types/palette';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -93,14 +93,41 @@ export const usePaletteStore = () => {
     } else if (templateType === 'smart') {
       const groupId = crypto.randomUUID();
       defaultGroups = [
-        { id: groupId, boardId, name: 'SMART Goals', color: '#F59E0B', position: 0 }
+        { id: groupId, boardId, name: 'Core Framework', color: '#F59E0B', position: 0 }
       ];
       defaultColumns = [
-        { id: crypto.randomUUID(), boardId, name: 'Specific', position: 0, type: 'text' },
-        { id: crypto.randomUUID(), boardId, name: 'Measurable', position: 1, type: 'text' },
-        { id: crypto.randomUUID(), boardId, name: 'Achievable', position: 2, type: 'checkbox' },
-        { id: crypto.randomUUID(), boardId, name: 'Relevant', position: 3, type: 'checkbox' },
-        { id: crypto.randomUUID(), boardId, name: 'Time-bound', position: 4, type: 'date' },
+        { id: crypto.randomUUID(), boardId, name: 'Specific (What?)', position: 0, type: 'text' },
+        { id: crypto.randomUUID(), boardId, name: 'Measurable (How?)', position: 1, type: 'text' },
+        { id: crypto.randomUUID(), boardId, name: 'Achievable (Can?)', position: 2, type: 'checkbox' },
+        { id: crypto.randomUUID(), boardId, name: 'Relevant (Why?)', position: 3, type: 'checkbox' },
+        { id: crypto.randomUUID(), boardId, name: 'Time-bound (When?)', position: 4, type: 'date' },
+      ];
+      // Add a template task
+      defaultTasks = [
+        {
+          id: crypto.randomUUID(),
+          columnId: '',
+          groupId,
+          title: 'Specific: What exactly do I want to accomplish?',
+          description: 'Define the goal as clearly as possible with no ambiguous language.',
+          dueDate: new Date().toISOString(),
+          tags: ['SMART'],
+          position: 0,
+          createdAt: new Date().toISOString(),
+          status: 'Planning'
+        },
+        {
+          id: crypto.randomUUID(),
+          columnId: '',
+          groupId,
+          title: 'Measurable: How will I know when it is accomplished?',
+          description: 'Establish concrete criteria for measuring progress.',
+          dueDate: new Date().toISOString(),
+          tags: ['SMART'],
+          position: 1,
+          createdAt: new Date().toISOString(),
+          status: 'Planning'
+        }
       ];
     } else {
       // Default Monday-style grouping for blank
