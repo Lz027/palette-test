@@ -42,9 +42,8 @@ const AiTools = () => {
     <AppLayout>
       <div className="max-w-4xl mx-auto p-6 space-y-8">
         <div className="flex items-center gap-4 mb-8">
-          <div className="relative flex items-center justify-center w-12 h-12 bg-black rounded-2xl shadow-lg">
-            <Sparkles className="w-7 h-7 text-[#FF6B6B] absolute -top-1 -left-1" />
-            <Sparkles className="w-5 h-5 text-[#8A2BE2] absolute -bottom-1 -right-1" />
+          <div className="p-3 rounded-2xl bg-palette-purple/10 text-palette-purple">
+            <Sparkles className="w-8 h-8" />
           </div>
           <div>
             <h1 className="text-3xl font-black tracking-tight">Pal Assistant</h1>

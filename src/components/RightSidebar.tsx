@@ -240,7 +240,7 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
                     <span className="text-xs font-bold text-foreground">Talk to Pal</span>
                   </div>
                   <p className="text-[10px] text-muted-foreground leading-relaxed">
-                    Ready to organize your workflow with AI.
+                    Ready to organize your workspace with AI.
                   </p>
                 </button>
               </div>
