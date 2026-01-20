@@ -166,6 +166,22 @@ export const usePaletteStore = () => {
     }));
   }, []);
 
+  // Column operations
+  const updateColumn = useCallback((id: string, updates: Partial<Column>) => {
+    setState(prev => ({
+      ...prev,
+      columns: prev.columns.map(c => (c.id === id ? { ...c, ...updates } : c)),
+    }));
+  }, []);
+
+  const deleteColumn = useCallback((id: string) => {
+    setState(prev => ({
+      ...prev,
+      columns: prev.columns.filter(c => c.id !== id),
+      tasks: prev.tasks.filter(t => t.columnId !== id),
+    }));
+  }, []);
+
   // Task operations
   const createTask = useCallback((columnId: string, title: string, groupId?: string): Task => {
     const newTask: Task = {
@@ -265,6 +281,23 @@ export const usePaletteStore = () => {
     return !!(state.settings.openaiKey || state.settings.geminiKey);
   }, [state.settings]);
 
+  // Data management
+  const exportData = useCallback(() => {
+    return JSON.stringify(state, null, 2);
+  }, [state]);
+
+  const clearAllData = useCallback(() => {
+    setState(initialState);
+    localStorage.removeItem(STORAGE_KEY);
+  }, []);
+
+  const isCloudConnected = !!(state.settings.supabaseUrl && state.settings.supabaseAnonKey);
+
+  const syncToCloud = useCallback(async () => {
+    // Placeholder for cloud sync - would integrate with Supabase
+    console.log('Syncing to cloud...');
+  }, []);
+
   return {
     ...state,
     createBoard,
@@ -275,6 +308,8 @@ export const usePaletteStore = () => {
     createGroup,
     updateGroup,
     deleteGroup,
+    updateColumn,
+    deleteColumn,
     createTask,
     updateTask,
     deleteTask,
@@ -287,6 +322,10 @@ export const usePaletteStore = () => {
     getBoardProgress,
     getCurrentFocusBoard,
     hasAiKeys,
+    exportData,
+    clearAllData,
+    isCloudConnected,
+    syncToCloud,
     updateSettings: (updates: Partial<UserSettings>) => setState(prev => ({ ...prev, settings: { ...prev.settings, ...updates } })),
   };
 };
