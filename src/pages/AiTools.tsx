@@ -84,25 +84,31 @@ const AiTools = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-[400px] mb-4 rounded-xl border border-border/60 bg-muted/10 overflow-y-auto p-4 space-y-4">
+            <div className="h-[500px] mb-4 rounded-2xl border border-border/40 bg-card shadow-inner overflow-y-auto p-6 space-y-4 custom-scrollbar">
               {messages.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-muted-foreground text-sm italic">
-                  Start a conversation with Pal to get help with your projects
+                <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-4">
+                  <div className="p-4 rounded-full bg-muted/50">
+                    <Sparkles className="w-8 h-8 opacity-20" />
+                  </div>
+                  <p className="text-sm italic font-medium">How can Pal help you today?</p>
                 </div>
               ) : (
                 messages.map((msg, i) => (
                   <div key={i} className={cn(
-                    "flex flex-col max-w-[80%]",
+                    "flex flex-col max-w-[85%] animate-in fade-in slide-in-from-bottom-2 duration-300",
                     msg.role === 'user' ? "ml-auto items-end" : "mr-auto items-start"
                   )}>
                     <div className={cn(
-                      "px-4 py-2 rounded-2xl text-sm shadow-sm",
+                      "px-5 py-3 rounded-2xl text-sm font-medium leading-relaxed shadow-sm",
                       msg.role === 'user' 
-                        ? "bg-black text-white rounded-tr-none" 
-                        : "bg-white border border-border/50 text-foreground rounded-tl-none"
+                        ? "bg-primary text-primary-foreground rounded-tr-none" 
+                        : "bg-muted text-foreground rounded-tl-none border border-border/50"
                     )}>
                       {msg.content}
                     </div>
+                    <span className="text-[10px] text-muted-foreground mt-1 px-1 font-bold uppercase tracking-tighter opacity-50">
+                      {msg.role === 'user' ? 'You' : 'Pal'}
+                    </span>
                   </div>
                 ))
               )}
