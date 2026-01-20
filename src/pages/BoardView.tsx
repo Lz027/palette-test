@@ -51,6 +51,13 @@ const BoardView = () => {
 
   const columns = getBoardColumns(board.id);
 
+  // Default to list view for SMART goals to feel more like a memo
+  useEffect(() => {
+    if (board.templateType === 'smart' && view !== 'table') {
+      setView('table');
+    }
+  }, [board.templateType]);
+
   return (
     <AppLayout>
       <div className="h-screen flex flex-col bg-background overflow-hidden">
@@ -62,17 +69,21 @@ const BoardView = () => {
             <div className="flex items-center gap-2">
               <Tabs value={view} onValueChange={(v) => setView(v as any)} className="w-fit">
                 <TabsList className="bg-muted/50 p-0.5 h-7">
-                  <TabsTrigger value="palette" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
-                    <TableIcon className="w-3 h-3 mr-1" />
-                    Table
-                  </TabsTrigger>
-                  <TabsTrigger value="kanban" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
-                    <LayoutGrid className="w-3 h-3 mr-1" />
-                    Kanban
-                  </TabsTrigger>
+                  {board.templateType !== 'smart' && (
+                    <TabsTrigger value="palette" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
+                      <TableIcon className="w-3 h-3 mr-1" />
+                      Table
+                    </TabsTrigger>
+                  )}
+                  {board.templateType !== 'smart' && (
+                    <TabsTrigger value="kanban" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
+                      <LayoutGrid className="w-3 h-3 mr-1" />
+                      Kanban
+                    </TabsTrigger>
+                  )}
                   <TabsTrigger value="table" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
                     <List className="w-3 h-3 mr-1" />
-                    List
+                    {board.templateType === 'smart' ? 'Memo View' : 'List'}
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -81,10 +92,10 @@ const BoardView = () => {
                 variant="ghost" 
                 size="sm" 
                 className="text-muted-foreground h-7 text-[10px] px-2" 
-                onClick={() => createGroup(board.id, 'New Group')}
+                onClick={() => createGroup(board.id, board.templateType === 'smart' ? 'New Goal' : 'New Group')}
               >
                 <Plus className="w-3 h-3 mr-1" />
-                Add Group
+                {board.templateType === 'smart' ? 'Add Goal' : 'Add Group'}
               </Button>
             </div>
 
