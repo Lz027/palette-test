@@ -16,8 +16,9 @@ const AiTools = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSend = async () => {
-    if (!settings.geminiKey) {
-      toast.error("Please add your Gemini API key in Profile settings first.");
+    const systemKey = typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : import.meta.env.VITE_GEMINI_API_KEY;
+    if (!settings.geminiKey && !systemKey) {
+      toast.error("Gemini API key is missing. Please check your setup.");
       return;
     }
     if (!input.trim()) return;
@@ -28,10 +29,10 @@ const AiTools = () => {
     setIsLoading(true);
 
     try {
-      const response = await getGeminiResponse(settings.geminiKey, userMessage);
+      const response = await getGeminiResponse(settings.geminiKey || systemKey, userMessage);
       setMessages(prev => [...prev, { role: 'assistant', content: response }]);
     } catch (error) {
-      toast.error("Failed to get response from Pal. Please check your API key.");
+      toast.error("Failed to get response from Pal. Please check the API key.");
     } finally {
       setIsLoading(false);
     }
