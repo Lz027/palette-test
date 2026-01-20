@@ -3,33 +3,51 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { usePalette } from "@/contexts/PaletteContext";
-import { Sparkles, Send, Brain, Wand2, MessageSquare } from "lucide-react";
+import { Sparkles, Send, Brain, Wand2, MessageSquare, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getGeminiResponse } from "@/lib/gemini";
+import { cn } from "@/lib/utils";
 
 const AiTools = () => {
-  const { hasAiKeys } = usePalette();
+  const { settings } = usePalette();
   const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
-    if (!hasAiKeys()) {
-      toast.error("Please add your OpenAI API key in settings first.");
+  const handleSend = async () => {
+    if (!settings.geminiKey) {
+      toast.error("Please add your Gemini API key in Profile settings first.");
       return;
     }
-    toast.info("AI assistant processing... (Demo Mode)");
+    if (!input.trim()) return;
+
+    const userMessage = input.trim();
     setInput("");
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsLoading(true);
+
+    try {
+      const response = await getGeminiResponse(settings.geminiKey, userMessage);
+      setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    } catch (error) {
+      toast.error("Failed to get response from Pal. Please check your API key.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto p-6 space-y-8">
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 rounded-2xl bg-palette-purple/10 text-palette-purple">
-            <Sparkles className="w-8 h-8" />
+          <div className="relative flex items-center justify-center w-12 h-12 bg-black rounded-2xl shadow-lg">
+            <Sparkles className="w-7 h-7 text-[#FF6B6B] absolute -top-1 -left-1" />
+            <Sparkles className="w-5 h-5 text-[#8A2BE2] absolute -bottom-1 -right-1" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">AI Assistant</h1>
-            <p className="text-muted-foreground">Supercharge your productivity with Pal</p>
+            <h1 className="text-3xl font-black tracking-tight">Pal Assistant</h1>
+            <p className="text-muted-foreground font-medium">Powered by Gemini 2.5 Flash</p>
           </div>
         </div>
 
@@ -65,19 +83,51 @@ const AiTools = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] mb-4 rounded-xl border border-dashed border-border/60 flex items-center justify-center text-muted-foreground text-sm">
-              Start a conversation to get help with your projects
+            <div className="h-[400px] mb-4 rounded-xl border border-border/60 bg-muted/10 overflow-y-auto p-4 space-y-4">
+              {messages.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-muted-foreground text-sm italic">
+                  Start a conversation with Pal to get help with your projects
+                </div>
+              ) : (
+                messages.map((msg, i) => (
+                  <div key={i} className={cn(
+                    "flex flex-col max-w-[80%]",
+                    msg.role === 'user' ? "ml-auto items-end" : "mr-auto items-start"
+                  )}>
+                    <div className={cn(
+                      "px-4 py-2 rounded-2xl text-sm shadow-sm",
+                      msg.role === 'user' 
+                        ? "bg-black text-white rounded-tr-none" 
+                        : "bg-white border border-border/50 text-foreground rounded-tl-none"
+                    )}>
+                      {msg.content}
+                    </div>
+                  </div>
+                ))
+              )}
+              {isLoading && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground animate-pulse ml-2">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Pal is thinking...
+                </div>
+              )}
             </div>
             <div className="flex gap-2">
               <Input 
                 placeholder="How can I organize my next React project?" 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                 className="rounded-xl h-12"
+                disabled={isLoading}
               />
-              <Button onClick={handleSend} size="icon" className="h-12 w-12 rounded-xl shrink-0">
-                <Send className="w-5 h-5" />
+              <Button 
+                onClick={handleSend} 
+                size="icon" 
+                className="h-12 w-12 rounded-xl shrink-0 bg-black hover:bg-black/90"
+                disabled={isLoading}
+              >
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5 text-white" />}
               </Button>
             </div>
           </CardContent>
