@@ -55,7 +55,7 @@ export const usePaletteStore = () => {
   }, [state]);
 
   // Board operations
-  const createBoard = useCallback((name: string, templateType: 'blank' | 'kanban' | 'crm' = 'blank', color: string = '#FF9AA2'): Board => {
+  const createBoard = useCallback((name: string, templateType: BoardTemplate = 'blank', color: string = '#FF9AA2'): Board => {
     const boardId = crypto.randomUUID();
     const newBoard: Board = {
       id: boardId,
@@ -66,7 +66,7 @@ export const usePaletteStore = () => {
       createdAt: new Date().toISOString(),
       templateType,
       color,
-      icon: templateType === 'kanban' ? 'kanban' : templateType === 'crm' ? 'users' : 'layout-grid',
+      icon: templateType === 'kanban' ? 'kanban' : templateType === 'crm' ? 'users' : templateType === 'smart' ? 'file-text' : 'layout-grid',
     };
 
     let defaultGroups: Group[] = [];
@@ -79,8 +79,31 @@ export const usePaletteStore = () => {
         { id: crypto.randomUUID(), boardId, name: 'In Progress', position: 1, type: 'status' },
         { id: crypto.randomUUID(), boardId, name: 'Done', position: 2, type: 'status' },
       ];
+    } else if (templateType === 'crm') {
+      const groupId = crypto.randomUUID();
+      defaultGroups = [
+        { id: groupId, boardId, name: 'Leads', color: '#6A0DAD', position: 0 }
+      ];
+      defaultColumns = [
+        { id: crypto.randomUUID(), boardId, name: 'Contact', position: 0, type: 'text' },
+        { id: crypto.randomUUID(), boardId, name: 'Stage', position: 1, type: 'status' },
+        { id: crypto.randomUUID(), boardId, name: 'Value', position: 2, type: 'number' },
+        { id: crypto.randomUUID(), boardId, name: 'Last Contact', position: 3, type: 'date' },
+      ];
+    } else if (templateType === 'smart') {
+      const groupId = crypto.randomUUID();
+      defaultGroups = [
+        { id: groupId, boardId, name: 'SMART Goals', color: '#F59E0B', position: 0 }
+      ];
+      defaultColumns = [
+        { id: crypto.randomUUID(), boardId, name: 'Specific', position: 0, type: 'text' },
+        { id: crypto.randomUUID(), boardId, name: 'Measurable', position: 1, type: 'text' },
+        { id: crypto.randomUUID(), boardId, name: 'Achievable', position: 2, type: 'checkbox' },
+        { id: crypto.randomUUID(), boardId, name: 'Relevant', position: 3, type: 'checkbox' },
+        { id: crypto.randomUUID(), boardId, name: 'Time-bound', position: 4, type: 'date' },
+      ];
     } else {
-      // Default Monday-style grouping for blank/crm
+      // Default Monday-style grouping for blank
       const groupId = crypto.randomUUID();
       defaultGroups = [
         { id: groupId, boardId, name: 'Main Table', color: '#6A0DAD', position: 0 }

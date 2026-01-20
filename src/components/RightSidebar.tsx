@@ -244,6 +244,23 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
                   </p>
                 </button>
               </div>
+              
+              <div className="px-2 py-3 mt-4 rounded-xl bg-muted/30 border border-border/50">
+                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  Quick Tips
+                </h4>
+                <ul className="space-y-2">
+                  <li className="text-[10px] text-muted-foreground leading-tight flex gap-2">
+                    <div className="w-1 h-1 rounded-full bg-primary mt-1 shrink-0" />
+                    Use 'Palette' view for a powerful Excel-like experience.
+                  </li>
+                  <li className="text-[10px] text-muted-foreground leading-tight flex gap-2">
+                    <div className="w-1 h-1 rounded-full bg-primary mt-1 shrink-0" />
+                    SMART Memos help you stay focused on specific goals.
+                  </li>
+                </ul>
+              </div>
             </div>
           )}
 

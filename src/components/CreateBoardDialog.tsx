@@ -10,9 +10,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { usePalette } from '@/contexts/PaletteContext';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Kanban, Users } from 'lucide-react';
+import { LayoutGrid, Kanban, Users, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ColorPicker } from '@/components/ColorPicker';
+import { BoardTemplate } from '@/types/palette';
 
 interface CreateBoardDialogProps {
   open: boolean;
@@ -23,29 +24,36 @@ const templates = [
   {
     id: 'blank',
     name: 'Blank',
-    description: 'Start with a clean slate. Add columns as needed.',
+    description: 'Start with a clean slate. Custom columns for any project.',
     icon: LayoutGrid,
     color: 'bg-slate-500',
   },
   {
     id: 'kanban',
     name: 'Kanban',
-    description: 'Perfect for workflow management. Organize tasks by status.',
+    description: 'Optimized for flow. To Do, In Progress, and Done views.',
     icon: Kanban,
     color: 'bg-indigo-500',
   },
   {
     id: 'crm',
     name: 'CRM',
-    description: 'Manage contacts and deals. Track customer relationships.',
+    description: 'Lead tracking, contact info, and deal management.',
     icon: Users,
     color: 'bg-rose-500',
+  },
+  {
+    id: 'smart',
+    name: 'SMART Memo',
+    description: 'Write down and track your Specific, Measurable goals.',
+    icon: FileText,
+    color: 'bg-amber-500',
   },
 ] as const;
 
 export const CreateBoardDialog = ({ open, onOpenChange }: CreateBoardDialogProps) => {
   const [name, setName] = useState('');
-  const [template, setTemplate] = useState<'blank' | 'kanban' | 'crm'>('blank');
+  const [template, setTemplate] = useState<BoardTemplate>('blank');
   const [color, setColor] = useState('#FF9AA2');
   const { createBoard, openBoard } = usePalette();
   const navigate = useNavigate();
@@ -93,7 +101,7 @@ export const CreateBoardDialog = ({ open, onOpenChange }: CreateBoardDialogProps
 
           <div className="space-y-3">
             <Label>Choose a Template</Label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {templates.map((t) => (
                 <div
                   key={t.id}

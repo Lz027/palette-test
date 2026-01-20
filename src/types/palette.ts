@@ -1,3 +1,5 @@
+export type BoardTemplate = 'blank' | 'kanban' | 'crm' | 'smart';
+
 export interface Board {
   id: string;
   name: string;
@@ -5,7 +7,7 @@ export interface Board {
   pinned: boolean;
   archived: boolean;
   createdAt: string;
-  templateType: 'blank' | 'kanban' | 'crm';
+  templateType: BoardTemplate;
   color: string;
   icon: string;
   description?: string;
