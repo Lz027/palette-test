@@ -1,122 +1,164 @@
 import { useState } from 'react';
 import { usePalette } from '@/contexts/PaletteContext';
-import { BoardCard } from '@/components/BoardCard';
+import { BoardCardCompact } from '@/components/BoardCardCompact';
 import { CurrentFocus } from '@/components/CurrentFocus';
 import { Button } from '@/components/ui/button';
-import { Plus, LayoutGrid, Clock, Star, Sparkles, Layout, Zap, ChevronRight } from 'lucide-react';
+import { Plus, LayoutGrid, Clock, Sparkles } from 'lucide-react';
 import { CreateBoardDialog } from '@/components/CreateBoardDialog';
-import { BottomNav } from '@/components/BottomNav';
+import { AppLayout } from '@/components/AppLayout';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { AccountNav } from '@/components/AccountNav';
-import { PalAssistant } from '@/components/PalAssistant';
 import paletteLogo from '@/assets/palette-logo.jpg';
-import { cn } from '@/lib/utils';
 
 const Dashboard = () => {
-  const { getActiveBoards, getCurrentFocusBoard, hasAiKeys } = usePalette();
+  const { getActiveBoards, getCurrentFocusBoard } = usePalette();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   
   const activeBoards = getActiveBoards();
   const focusBoard = getCurrentFocusBoard();
 
-
+  // Separate pinned and recent boards
+  const pinnedBoards = activeBoards.filter(b => b.pinned);
+  const recentBoards = activeBoards.filter(b => !b.pinned).slice(0, 6);
 
   return (
-    <div className="min-h-screen bg-background pb-20 selection:bg-primary/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-        
-        {/* Header Section */}
-        <AnimatedSection direction="down">
-          <header className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
-            <div className="relative flex items-center gap-4">
-              <div className="relative group">
-                <div className="absolute inset-0 gradient-palette rounded-2xl blur-md opacity-30 group-hover:opacity-50 transition-opacity" />
-                <img 
-                  src={paletteLogo} 
-                  alt="PALETTE" 
-                  className="relative h-12 w-12 rounded-2xl object-cover shadow-sm transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gradient tracking-tight">PALETTE</h1>
-                <p className="text-xs text-muted-foreground font-medium">Beautifully organized</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button 
-                onClick={() => setIsCreateOpen(true)}
-                className="rounded-xl bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:shadow-md transition-all active:scale-95"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                New Board
-              </Button>
-              <AccountNav />
-            </div>
-          </header>
-        </AnimatedSection>
-
-        {/* Focus Board */}
-        {focusBoard && (
-          <AnimatedSection delay={0.2}>
-            <CurrentFocus board={focusBoard} />
-          </AnimatedSection>
-        )}
-
-        {/* Boards Grid */}
-        <div className="space-y-6">
-          <AnimatedSection delay={0.3} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <LayoutGrid className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-semibold">Your Boards</h2>
-              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                {activeBoards.length}
-              </span>
-            </div>
-          </AnimatedSection>
-
-          {activeBoards.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activeBoards.map((board, index) => (
-                <AnimatedSection 
-                  key={board.id} 
-                  delay={0.1 * (index + 1)}
-                  direction="up"
-                >
-                  <BoardCard board={board} />
-                </AnimatedSection>
-              ))}
-            </div>
-          ) : (
-            <AnimatedSection delay={0.4}>
-              <div className="flex flex-col items-center justify-center py-20 px-4 bg-muted/20 rounded-3xl border-2 border-dashed border-border/50 text-center">
-                <div className="relative inline-block mb-6">
-                  <div className="w-20 h-20 rounded-3xl gradient-palette flex items-center justify-center shadow-lg animate-bounce-slow">
-                    <Plus className="h-10 w-10 text-white" />
-                  </div>
+    <AppLayout>
+      <div className="min-h-screen bg-background selection:bg-primary/10">
+        <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
+          
+          {/* Header Section */}
+          <AnimatedSection direction="down">
+            <header className="flex items-center justify-between pb-6 border-b border-border/40">
+              <div className="flex items-center gap-4">
+                <div className="relative group">
+                  <div className="absolute inset-0 gradient-palette rounded-2xl blur-md opacity-30 group-hover:opacity-50 transition-opacity" />
+                  <img 
+                    src={paletteLogo} 
+                    alt="PALETTE" 
+                    className="relative h-10 w-10 rounded-xl object-cover shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  />
                 </div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">Welcome to PALETTE</h2>
-                <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-6">
-                  Create your first board to start organizing your projects with style
-                </p>
-                <Button variant="outline" onClick={() => setIsCreateOpen(true)} size="lg">
-                  Create Your First Board
+                <div>
+                  <h1 className="text-lg font-bold text-gradient tracking-tight">PALETTE</h1>
+                  <p className="text-xs text-muted-foreground">Your workspace</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button 
+                  onClick={() => setIsCreateOpen(true)}
+                  size="sm"
+                  className="rounded-lg bg-primary px-4 text-xs font-medium shadow-sm hover:shadow-md transition-all"
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1.5" />
+                  New Board
                 </Button>
+                <AccountNav />
+              </div>
+            </header>
+          </AnimatedSection>
+
+          {/* Focus Board */}
+          {focusBoard && (
+            <AnimatedSection delay={0.1}>
+              <CurrentFocus board={focusBoard} />
+            </AnimatedSection>
+          )}
+
+          {/* Pinned Boards */}
+          {pinnedBoards.length > 0 && (
+            <AnimatedSection delay={0.2}>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-palette-purple" />
+                  <h2 className="text-sm font-semibold">Pinned</h2>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {pinnedBoards.map((board, index) => (
+                    <AnimatedSection 
+                      key={board.id} 
+                      delay={0.05 * (index + 1)}
+                      direction="up"
+                    >
+                      <BoardCardCompact board={board} />
+                    </AnimatedSection>
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
+          )}
+
+          {/* Recent Boards */}
+          <AnimatedSection delay={0.3}>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <h2 className="text-sm font-semibold">Recent</h2>
+                  <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                    {recentBoards.length}
+                  </span>
+                </div>
+              </div>
+
+              {recentBoards.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {recentBoards.map((board, index) => (
+                    <AnimatedSection 
+                      key={board.id} 
+                      delay={0.05 * (index + 1)}
+                      direction="up"
+                    >
+                      <BoardCardCompact board={board} />
+                    </AnimatedSection>
+                  ))}
+                </div>
+              ) : activeBoards.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 px-4 bg-muted/10 rounded-2xl border border-dashed border-border/50 text-center">
+                  <div className="w-14 h-14 rounded-2xl gradient-palette flex items-center justify-center shadow-lg mb-4">
+                    <Plus className="h-6 w-6 text-white" />
+                  </div>
+                  <h2 className="text-lg font-semibold mb-1">Welcome to PALETTE</h2>
+                  <p className="text-sm text-muted-foreground max-w-xs mb-4">
+                    Create your first board to get started
+                  </p>
+                  <Button size="sm" onClick={() => setIsCreateOpen(true)}>
+                    Create Board
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          </AnimatedSection>
+
+          {/* All Boards Grid */}
+          {activeBoards.length > 6 && (
+            <AnimatedSection delay={0.4}>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <LayoutGrid className="w-4 h-4 text-muted-foreground" />
+                  <h2 className="text-sm font-semibold">All Boards</h2>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {activeBoards.slice(6).map((board, index) => (
+                    <AnimatedSection 
+                      key={board.id} 
+                      delay={0.03 * (index + 1)}
+                      direction="up"
+                    >
+                      <BoardCardCompact board={board} />
+                    </AnimatedSection>
+                  ))}
+                </div>
               </div>
             </AnimatedSection>
           )}
         </div>
 
-
+        <CreateBoardDialog 
+          open={isCreateOpen} 
+          onOpenChange={setIsCreateOpen} 
+        />
       </div>
-
-      <CreateBoardDialog 
-        open={isCreateOpen} 
-        onOpenChange={setIsCreateOpen} 
-      />
-      
-      <BottomNav />
-      <PalAssistant />
-    </div>
+    </AppLayout>
   );
 };
 

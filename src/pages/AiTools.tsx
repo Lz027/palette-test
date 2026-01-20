@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Key, MessageSquare, ListTodo, FileText } from 'lucide-react';
-import { BottomNav } from '@/components/BottomNav';
+import { AppLayout } from '@/components/AppLayout';
 import { usePalette } from '@/contexts/PaletteContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,6 +28,7 @@ const AiTools = () => {
   ];
 
   return (
+    <AppLayout>
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="px-4 py-5 border-b border-border/50">
@@ -91,9 +92,8 @@ const AiTools = () => {
           </>
         )}
       </main>
-
-      <BottomNav />
     </div>
+    </AppLayout>
   );
 };
 

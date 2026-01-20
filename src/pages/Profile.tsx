@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { User, Key, Sparkles, Shield, LogOut, Mail, Palette, Trash2, Database } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { BottomNav } from '@/components/BottomNav';
+import { AppLayout } from '@/components/AppLayout';
 import { AnimatedSection } from '@/components/AnimatedSection';
 
 const Profile = () => {
@@ -32,6 +32,7 @@ const Profile = () => {
   };
 
   return (
+    <AppLayout>
     <div className="min-h-screen bg-background pb-32">
       <div className="max-w-3xl mx-auto px-4 py-12 space-y-8">
         
@@ -183,8 +184,8 @@ const Profile = () => {
         </AnimatedSection>
 
       </div>
-      <BottomNav />
     </div>
+    </AppLayout>
   );
 };
 
