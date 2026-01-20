@@ -10,6 +10,7 @@ export const getGeminiResponse = async (apiKey: string | undefined, prompt: stri
     }
 
     const genAI = new GoogleGenerativeAI(finalKey);
+    // Standard model is gemini-1.5-flash. gemini-3-flash-preview might not be available yet or spelled differently.
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
