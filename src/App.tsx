@@ -37,7 +37,8 @@ const AuthScreen = () => {
     e.preventDefault();
     if (!email) return;
     await loginWithEmail(email);
-    setIsEmailSent(true);
+    // After login, the AuthProvider/useAuth will update the 'user' state,
+    // and AppRoutes will redirect to Dashboard or Intro.
   };
 
   return (

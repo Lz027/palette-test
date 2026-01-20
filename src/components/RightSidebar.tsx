@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import paletteLogo from '@/assets/palette-logo.jpg';
+import { CreateBoardDialog } from './CreateBoardDialog';
 
 interface RightSidebarProps {
   collapsed?: boolean;
