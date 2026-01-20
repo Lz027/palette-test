@@ -259,11 +259,11 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
               collapsed && "justify-center"
             )}
           >
-            <div className="h-8 w-8 rounded-lg overflow-hidden shrink-0 shadow-sm border border-white/10 bg-white">
+            <div className="h-8 w-8 rounded-lg shrink-0 shadow-sm border border-white/10">
               <img 
                 src="/shoseki-logo.png" 
                 alt="Shoseki" 
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
               />
             </div>
             {!collapsed && (
