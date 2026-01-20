@@ -25,11 +25,11 @@ const BoardView = () => {
   useEffect(() => {
     if (id) {
       openBoard(id);
-      // Scroll to top when opening a new board
+      // Fast scroll to top when opening a new board
       if (contentRef.current) {
-        contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        contentRef.current.scrollTo({ top: 0 });
       }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0 });
     }
   }, [id, openBoard]);
 
@@ -57,60 +57,60 @@ const BoardView = () => {
         <BoardViewHeader board={board} />
         
         <main className="flex-1 overflow-hidden flex flex-col">
-          {/* Sub-header with View Switcher and Search */}
-          <div className="px-4 py-3 border-b bg-muted/5 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+          {/* Compact Sub-header */}
+          <div className="px-4 py-2 border-b bg-muted/5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
               <Tabs value={view} onValueChange={(v) => setView(v as any)} className="w-fit">
-                <TabsList className="bg-muted/50 p-0.5 h-8">
-                  <TabsTrigger value="palette" className="data-[state=active]:bg-background h-7 text-xs px-3">
-                    <TableIcon className="w-3.5 h-3.5 mr-1.5" />
+                <TabsList className="bg-muted/50 p-0.5 h-7">
+                  <TabsTrigger value="palette" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
+                    <TableIcon className="w-3 h-3 mr-1" />
                     Table
                   </TabsTrigger>
-                  <TabsTrigger value="kanban" className="data-[state=active]:bg-background h-7 text-xs px-3">
-                    <LayoutGrid className="w-3.5 h-3.5 mr-1.5" />
+                  <TabsTrigger value="kanban" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
+                    <LayoutGrid className="w-3 h-3 mr-1" />
                     Kanban
                   </TabsTrigger>
-                  <TabsTrigger value="table" className="data-[state=active]:bg-background h-7 text-xs px-3">
-                    <List className="w-3.5 h-3.5 mr-1.5" />
+                  <TabsTrigger value="table" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
+                    <List className="w-3 h-3 mr-1" />
                     List
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              <div className="h-5 w-px bg-border" />
+              <div className="h-4 w-px bg-border mx-1" />
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-muted-foreground h-7 text-xs" 
+                className="text-muted-foreground h-7 text-[10px] px-2" 
                 onClick={() => createGroup(board.id, 'New Group')}
               >
-                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                <Plus className="w-3 h-3 mr-1" />
                 Add Group
               </Button>
             </div>
 
-            <div className="relative w-48">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <div className="relative w-40">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
               <Input 
-                placeholder="Search..." 
+                placeholder="Find..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-7 text-xs bg-background"
+                className="pl-8 h-7 text-[10px] bg-background border-muted"
               />
             </div>
           </div>
 
           <div 
             ref={contentRef}
-            className="flex-1 overflow-auto p-4 scroll-smooth"
+            className="flex-1 overflow-auto p-2 md:p-4 scroll-smooth"
           >
-            <div className="max-w-[1400px] mx-auto h-full">
+            <div className="max-w-[1600px] mx-auto h-full">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={view}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.15 }}
+                  initial={{ opacity: 0, scale: 0.99 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.99 }}
+                  transition={{ duration: 0.1 }}
                   className="h-full"
                 >
                   {view === 'palette' ? (
