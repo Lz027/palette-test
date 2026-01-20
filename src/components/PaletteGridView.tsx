@@ -59,11 +59,11 @@ const GroupSection = ({ group, tasks, onAddTask, onUpdateTask, onDeleteTask, onU
   const [isEditingName, setIsEditingName] = useState(false);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3" id={`group-${group.id}`}>
       <div className="flex items-center justify-between group/header">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div 
-            className="w-1.5 h-8 rounded-full" 
+            className="w-1 h-6 rounded-full" 
             style={{ backgroundColor: group.color || '#6A0DAD' }} 
           />
           {isEditingName ? (
@@ -75,56 +75,62 @@ const GroupSection = ({ group, tasks, onAddTask, onUpdateTask, onDeleteTask, onU
                 setIsEditingName(false);
               }}
               onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-              className="h-8 font-bold text-lg bg-transparent border-none p-0 focus-visible:ring-0 w-fit"
+              className="h-7 font-bold text-base bg-transparent border-none p-0 focus-visible:ring-0 w-fit"
             />
           ) : (
             <h3 
-              className="text-lg font-bold cursor-pointer hover:text-primary transition-colors"
+              className="text-base font-bold cursor-pointer hover:text-primary transition-colors"
               onClick={() => setIsEditingName(true)}
             >
               {group.name}
             </h3>
           )}
-          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+          <span className="text-[10px] font-bold text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-md">
             {tasks.length}
           </span>
         </div>
-        <Button variant="ghost" size="icon" className="opacity-0 group-hover/header:opacity-100 transition-opacity" onClick={() => onDeleteGroup(group.id)}>
-          <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+        <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover/header:opacity-100 transition-opacity" onClick={() => onDeleteGroup(group.id)}>
+          <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
         </Button>
       </div>
 
-      <div className="bg-card border border-border/40 rounded-[2rem] overflow-hidden shadow-sm">
+      <div className="bg-card border border-border/40 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm min-w-[800px]">
+          <table className="w-full border-collapse text-[11px] min-w-[600px]">
             <thead>
-              <tr className="border-b border-border/40 bg-muted/20">
-                <th className="w-10 p-4"></th>
-                <th className="text-left p-4 font-semibold text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Type className="w-4 h-4" />
-                    Task Name
+              <tr className="border-b border-border/40 bg-muted/10">
+                <th className="w-8 p-2"></th>
+                <th className="text-left p-2 font-bold text-muted-foreground/60 uppercase tracking-tighter">
+                  <div className="flex items-center gap-1.5">
+                    <Type className="w-3 h-3" />
+                    Task
                   </div>
                 </th>
-                <th className="text-left p-4 font-semibold text-muted-foreground w-40">
-                  <div className="flex items-center gap-2">
-                    <Palette className="w-4 h-4" />
+                <th className="text-left p-2 font-bold text-muted-foreground/60 uppercase tracking-tighter w-24 text-center">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <Palette className="w-3 h-3" />
                     Status
                   </div>
                 </th>
-                <th className="text-left p-4 font-semibold text-muted-foreground w-48">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
+                <th className="text-left p-2 font-bold text-muted-foreground/60 uppercase tracking-tighter w-32">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-3 h-3" />
                     Date
                   </div>
                 </th>
-                <th className="text-left p-4 font-semibold text-muted-foreground w-48">
-                  <div className="flex items-center gap-2">
-                    <LinkIcon className="w-4 h-4" />
+                <th className="text-left p-2 font-bold text-muted-foreground/60 uppercase tracking-tighter w-40">
+                  <div className="flex items-center gap-1.5">
+                    <LinkIcon className="w-3 h-3" />
                     Link
                   </div>
                 </th>
-                <th className="w-10 p-4"></th>
+                <th className="w-20 p-2 font-bold text-muted-foreground/60 uppercase tracking-tighter text-center border-l border-border/20 group/new-col cursor-pointer hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center justify-center gap-1">
+                    <Plus className="w-3 h-3" />
+                    Column
+                  </div>
+                </th>
+                <th className="w-8 p-2"></th>
               </tr>
             </thead>
             <tbody>
@@ -137,17 +143,17 @@ const GroupSection = ({ group, tasks, onAddTask, onUpdateTask, onDeleteTask, onU
                 />
               ))}
               <tr 
-                className="hover:bg-muted/20 cursor-pointer transition-colors group/add"
+                className="hover:bg-muted/10 cursor-pointer transition-colors group/add"
                 onClick={onAddTask}
               >
-                <td className="p-4"></td>
-                <td colSpan={4} className="p-4 text-muted-foreground font-medium">
+                <td className="p-2"></td>
+                <td colSpan={5} className="p-2 text-muted-foreground font-medium">
                   <div className="flex items-center gap-2">
-                    <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    Add Item
+                    <Plus className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                    New Item
                   </div>
                 </td>
-                <td className="p-4"></td>
+                <td className="p-2"></td>
               </tr>
             </tbody>
           </table>
@@ -161,19 +167,19 @@ const TaskRow = ({ task, onUpdate, onDelete }: { task: Task, onUpdate: (updates:
   const [isEditing, setIsEditing] = useState(false);
 
   const statusColors: Record<string, string> = {
-    'Ready': 'bg-blue-500',
-    'Working': 'bg-orange-400',
-    'Stuck': 'bg-red-500',
-    'Done': 'bg-green-500',
-    'Pending': 'bg-slate-400',
+    'Ready': 'bg-blue-500 shadow-blue-500/20',
+    'Working': 'bg-orange-400 shadow-orange-400/20',
+    'Stuck': 'bg-red-500 shadow-red-500/20',
+    'Done': 'bg-green-500 shadow-green-500/20',
+    'Pending': 'bg-slate-400 shadow-slate-400/20',
   };
 
   return (
-    <tr className="border-b border-border/40 last:border-0 hover:bg-muted/10 transition-colors group/row">
-      <td className="p-4 text-center">
-        <GripVertical className="w-4 h-4 text-muted-foreground/30 group-hover/row:text-muted-foreground cursor-grab active:cursor-grabbing" />
+    <tr className="border-b border-border/40 last:border-0 hover:bg-muted/5 transition-colors group/row">
+      <td className="p-2 text-center">
+        <GripVertical className="w-3 h-3 text-muted-foreground/20 group-hover/row:text-muted-foreground/50 cursor-grab active:cursor-grabbing" />
       </td>
-      <td className="p-4">
+      <td className="p-2">
         {isEditing ? (
           <Input
             autoFocus
@@ -183,57 +189,60 @@ const TaskRow = ({ task, onUpdate, onDelete }: { task: Task, onUpdate: (updates:
               setIsEditing(false);
             }}
             onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-            className="h-8 bg-transparent border-none p-0 focus-visible:ring-0 font-medium"
+            className="h-7 bg-transparent border-none p-0 focus-visible:ring-0 font-medium text-[11px]"
           />
         ) : (
           <div 
-            className="font-medium cursor-text"
+            className="font-medium cursor-text truncate max-w-[300px]"
             onClick={() => setIsEditing(true)}
           >
-            {task.title}
+            {task.title || 'Untitled'}
           </div>
         )}
       </td>
-      <td className="p-4">
-        <select
-          value={task.status || 'Pending'}
-          onChange={(e) => onUpdate({ status: e.target.value })}
-          className={cn(
-            "w-full h-8 rounded-lg text-white text-[10px] font-black px-2 appearance-none cursor-pointer text-center transition-transform active:scale-95 uppercase tracking-wider",
-            statusColors[task.status || 'Pending'] || 'bg-slate-400'
-          )}
-        >
-          <option value="Pending">PENDING</option>
-          <option value="Working">WORKING</option>
-          <option value="Ready">READY</option>
-          <option value="Stuck">STUCK</option>
-          <option value="Done">DONE</option>
-        </select>
+      <td className="p-2">
+        <div className="flex justify-center">
+          <select
+            value={task.status || 'Pending'}
+            onChange={(e) => onUpdate({ status: e.target.value })}
+            className={cn(
+              "w-20 h-5 rounded-md text-white text-[9px] font-black appearance-none cursor-pointer text-center transition-all active:scale-95 uppercase tracking-tighter shadow-sm",
+              statusColors[task.status || 'Pending'] || 'bg-slate-400 shadow-slate-400/20'
+            )}
+          >
+            <option value="Pending">PENDING</option>
+            <option value="Working">WORKING</option>
+            <option value="Ready">READY</option>
+            <option value="Stuck">STUCK</option>
+            <option value="Done">DONE</option>
+          </select>
+        </div>
       </td>
-      <td className="p-4">
+      <td className="p-2">
         <Input 
           type="date"
           value={task.dueDate ? task.dueDate.split('T')[0] : ''}
           onChange={(e) => onUpdate({ dueDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
-          className="h-8 bg-transparent border-none p-0 focus-visible:ring-0 text-xs cursor-pointer text-muted-foreground"
+          className="h-6 bg-transparent border-none p-0 focus-visible:ring-0 text-[10px] cursor-pointer text-muted-foreground w-full"
         />
       </td>
-      <td className="p-4">
+      <td className="p-2">
         <Input 
-          placeholder="Add link..."
+          placeholder="URL..."
           value={task.data?.link || ''}
           onChange={(e) => onUpdate({ data: { ...task.data, link: e.target.value } })}
-          className="h-8 bg-transparent border-none p-0 focus-visible:ring-0 text-xs text-blue-500 hover:underline"
+          className="h-6 bg-transparent border-none p-0 focus-visible:ring-0 text-[10px] text-blue-500 hover:underline w-full"
         />
       </td>
-      <td className="p-4">
+      <td className="p-2 border-l border-border/10 bg-muted/5"></td>
+      <td className="p-2">
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-8 w-8 opacity-0 group-hover/row:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+          className="h-6 w-6 opacity-0 group-hover/row:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10"
           onClick={onDelete}
         >
-          <Plus className="w-4 h-4 rotate-45" />
+          <Plus className="w-3 h-3 rotate-45" />
         </Button>
       </td>
     </tr>

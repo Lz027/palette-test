@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { usePalette } from '@/contexts/PaletteContext';
 import { Button } from '@/components/ui/button';
@@ -18,12 +18,11 @@ import {
   ExternalLink,
   PanelRightClose,
   PanelRight,
-  User
+  User,
+  Hash
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import paletteLogo from '@/assets/palette-logo.jpg';
-import shosekiLogo from '@/assets/shoseki-logo.png';
-import { CreateBoardDialog } from './CreateBoardDialog';
 
 interface RightSidebarProps {
   collapsed?: boolean;
@@ -33,7 +32,7 @@ interface RightSidebarProps {
 export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { getActiveBoards, settings, hasAiKeys } = usePalette();
+  const { getActiveBoards, settings, hasAiKeys, getBoardGroups, boards } = usePalette();
   const [boardsExpanded, setBoardsExpanded] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -46,40 +45,51 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
   const isActive = (path: string) => location.pathname === path;
   const isBoardActive = (id: string) => location.pathname === `/board/${id}`;
 
+  const boardId = location.pathname.startsWith('/board/') ? location.pathname.split('/')[2] : null;
+  const currentBoard = boards.find(b => b.id === boardId);
+  const currentGroups = boardId ? getBoardGroups(boardId) : [];
+
   const navItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
     { icon: Settings, label: 'Settings', path: '/settings' },
     { icon: User, label: 'Profile', path: '/profile' },
   ];
 
+  const scrollToGroup = (groupId: string) => {
+    const element = document.getElementById(`group-${groupId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <>
       <aside 
         className={cn(
-          "fixed right-0 top-0 h-full bg-card border-l border-border/50 z-40 transition-all duration-300 flex flex-col",
+          "fixed right-0 top-0 h-full bg-card border-l border-border/50 z-40 transition-all duration-300 flex flex-col shadow-2xl",
           collapsed ? "w-16" : "w-72"
         )}
       >
         {/* Header */}
-        <div className="p-4 border-b border-border/50">
+        <div className="p-4 border-b border-border/50 bg-muted/5">
           <div className="flex items-center justify-between">
             {!collapsed && (
               <div className="flex items-center gap-3">
                 <img 
                   src={paletteLogo} 
                   alt="PALETTE" 
-                  className="h-9 w-9 rounded-xl object-cover"
+                  className="h-8 w-8 rounded-lg object-cover"
                 />
                 <div>
-                  <h1 className="text-sm font-bold text-gradient">PALETTE</h1>
-                  <p className="text-[10px] text-muted-foreground">Project Manager</p>
+                  <h1 className="text-sm font-bold tracking-tight text-foreground">PALETTE</h1>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Workspace</p>
                 </div>
               </div>
             )}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-8 w-8 shrink-0"
+              className="h-8 w-8 shrink-0 hover:bg-muted"
               onClick={onToggle}
             >
               {collapsed ? <PanelRight className="h-4 w-4" /> : <PanelRightClose className="h-4 w-4" />}
@@ -88,28 +98,15 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
         </div>
 
         <ScrollArea className="flex-1 px-3 py-4">
-          {/* Search */}
-          {!collapsed && (
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input 
-                placeholder="Search..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 text-xs bg-muted/30 border-none"
-              />
-            </div>
-          )}
-
           {/* Navigation */}
-          <div className="space-y-1 mb-4">
+          <div className="space-y-1 mb-6">
             {navItems.map((item) => (
               <Button
                 key={item.path}
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start h-9 px-3 text-sm font-medium",
-                  isActive(item.path) && "bg-primary/10 text-primary",
+                  "w-full justify-start h-9 px-3 text-sm font-medium rounded-xl transition-all",
+                  isActive(item.path) ? "bg-primary/10 text-primary shadow-sm" : "hover:bg-muted/50",
                   collapsed && "justify-center px-0"
                 )}
                 onClick={() => navigate(item.path)}
@@ -120,51 +117,89 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
             ))}
           </div>
 
-          <Separator className="my-4" />
+          {!collapsed && (
+            <div className="mb-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                <Input 
+                  placeholder="Search boards..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-8 text-xs bg-muted/30 border-none rounded-lg focus-visible:ring-1 focus-visible:ring-primary/20"
+                />
+              </div>
+            </div>
+          )}
 
-          {/* Boards Table of Contents */}
+          {/* Table of Contents (Current Board) */}
+          {!collapsed && currentBoard && currentGroups.length > 0 && (
+            <div className="mb-6 space-y-2">
+              <div className="flex items-center gap-2 px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                <Hash className="h-3 w-3" />
+                Contents
+              </div>
+              <div className="space-y-0.5">
+                {currentGroups.map((group) => (
+                  <button
+                    key={group.id}
+                    onClick={() => scrollToGroup(group.id)}
+                    className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all group"
+                  >
+                    <div 
+                      className="w-1.5 h-1.5 rounded-full shrink-0 opacity-60 group-hover:opacity-100" 
+                      style={{ backgroundColor: group.color || '#6A0DAD' }} 
+                    />
+                    <span className="truncate">{group.name}</span>
+                  </button>
+                ))}
+              </div>
+              <Separator className="mt-4" />
+            </div>
+          )}
+
+          {/* Boards List */}
           {!collapsed && (
             <div className="space-y-2">
               <button
                 onClick={() => setBoardsExpanded(!boardsExpanded)}
-                className="flex items-center justify-between w-full text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 py-1 hover:text-foreground transition-colors"
+                className="flex items-center justify-between w-full text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-2 py-1 hover:text-foreground transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <LayoutGrid className="h-3.5 w-3.5" />
+                  <LayoutGrid className="h-3 w-3" />
                   Boards ({activeBoards.length})
                 </div>
-                {boardsExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                {boardsExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
               </button>
 
               {boardsExpanded && (
-                <div className="space-y-0.5 pl-2">
+                <div className="space-y-0.5">
                   {filteredBoards.map((board) => (
                     <button
                       key={board.id}
                       onClick={() => navigate(`/board/${board.id}`)}
                       className={cn(
-                        "flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-lg text-sm transition-colors",
+                        "flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-lg text-xs transition-all",
                         isBoardActive(board.id) 
-                          ? "bg-primary/10 text-primary font-medium" 
-                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                          ? "bg-primary/5 text-primary font-semibold border border-primary/10 shadow-sm" 
+                          : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
                       )}
                     >
                       <div 
-                        className="w-2 h-2 rounded-full shrink-0" 
+                        className="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" 
                         style={{ backgroundColor: board.color }}
                       />
                       <span className="truncate flex-1">{board.name}</span>
-                      {board.pinned && <Pin className="h-3 w-3 shrink-0 opacity-50" />}
+                      {board.pinned && <Pin className="h-2.5 w-2.5 shrink-0 opacity-40" />}
                     </button>
                   ))}
                   
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start h-8 text-xs text-muted-foreground mt-1"
+                    className="w-full justify-start h-8 text-[10px] text-muted-foreground mt-1 hover:bg-muted/50 rounded-lg"
                     onClick={() => setCreateDialogOpen(true)}
                   >
-                    <Plus className="h-3.5 w-3.5 mr-2" />
+                    <Plus className="h-3 w-3 mr-2" />
                     New Board
                   </Button>
                 </div>
@@ -173,70 +208,75 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
           )}
 
           {collapsed && (
-            <div className="space-y-1">
+            <div className="flex flex-col items-center gap-4">
               <Button
                 variant="ghost"
                 size="icon"
-                className="w-full h-9"
+                className="h-10 w-10 rounded-xl bg-primary/5 text-primary"
                 onClick={() => setCreateDialogOpen(true)}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
               </Button>
             </div>
           )}
 
-          <Separator className="my-4" />
+          <Separator className="my-6 opacity-50" />
 
-          {/* Pal AI Section */}
+          {/* AI Assistant in Sidebar */}
           {!collapsed && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                <Sparkles className="h-3.5 w-3.5 text-palette-purple" />
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                <Sparkles className="h-3 w-3 text-palette-purple" />
                 AI Assistant
               </div>
-              <div className="px-2">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-palette-purple/10 to-palette-red/10 border border-palette-purple/20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-full bg-palette-purple flex items-center justify-center">
+              <div className="px-1">
+                <button 
+                  className="w-full text-left p-3 rounded-2xl bg-gradient-to-br from-palette-purple/10 to-palette-red/10 border border-palette-purple/20 hover:border-palette-purple/40 transition-all group"
+                  onClick={() => navigate('/ai-tools')}
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-6 h-6 rounded-lg bg-palette-purple flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                       <Sparkles className="h-3 w-3 text-white" />
                     </div>
-                    <span className="text-sm font-medium">Pal</span>
+                    <span className="text-xs font-bold text-foreground">Talk to Pal</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
                     {hasAiKeys() 
-                      ? "Ready to help with your tasks" 
-                      : "Add API keys in settings to enable AI features"
+                      ? "Ready to organize your workflow with AI." 
+                      : "Add API keys in settings to unlock AI power."
                     }
                   </p>
-                </div>
+                </button>
               </div>
             </div>
           )}
         </ScrollArea>
 
         {/* Shoseki AI Directory */}
-        <div className="p-3 border-t border-border/50">
+        <div className="p-3 bg-muted/5 border-t border-border/50">
           <a 
             href="https://shoseki.vercel.app" 
             target="_blank" 
             rel="noopener noreferrer"
             className={cn(
-              "flex items-center gap-3 p-2 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors group",
+              "flex items-center gap-3 p-2.5 rounded-2xl bg-background border border-border/50 hover:border-primary/30 hover:bg-primary/[0.02] transition-all shadow-sm group",
               collapsed && "justify-center"
             )}
           >
-            <img 
-              src={shosekiLogo} 
-              alt="Shoseki" 
-              className="h-8 w-8 rounded-lg object-cover bg-slate-800"
-            />
+            <div className="h-8 w-8 rounded-lg overflow-hidden shrink-0 shadow-sm border border-border/20">
+              <img 
+                src="/shoseki-logo.png" 
+                alt="Shoseki" 
+                className="h-full w-full object-cover"
+              />
+            </div>
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1">
-                  <span className="text-xs font-semibold truncate">Shoseki</span>
-                  <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-xs font-bold text-foreground truncate">Shoseki</span>
+                  <ExternalLink className="h-2.5 w-2.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                <p className="text-[10px] text-muted-foreground truncate">Your AI Directory</p>
+                <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-tighter truncate">AI Directory</p>
               </div>
             )}
           </a>
