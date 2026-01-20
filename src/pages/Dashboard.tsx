@@ -28,29 +28,29 @@ const Dashboard = () => {
           
           {/* Header Section */}
           <AnimatedSection direction="down">
-            <header className="flex items-center justify-between pb-6 border-b border-border/40">
-              <div className="flex items-center gap-4">
+            <header className="flex items-center justify-between pb-8">
+              <div className="flex items-center gap-5">
                 <div className="relative group">
-                  <div className="absolute inset-0 gradient-palette rounded-2xl blur-md opacity-30 group-hover:opacity-50 transition-opacity" />
+                  <div className="absolute inset-0 bg-primary/20 rounded-[2rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <img 
                     src={paletteLogo} 
                     alt="PALETTE" 
-                    className="relative h-10 w-10 rounded-xl object-cover shadow-sm transition-transform duration-300 group-hover:scale-105"
+                    className="relative h-14 w-14 rounded-[1.5rem] object-cover shadow-2xl border-4 border-background transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
                   />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gradient tracking-tight">PALETTE</h1>
-                  <p className="text-xs text-muted-foreground">Your workspace</p>
+                  <h1 className="text-4xl font-black tracking-tighter text-foreground leading-none">PALETTE</h1>
+                  <p className="text-sm font-bold text-muted-foreground mt-1 uppercase tracking-[0.2em] opacity-60">Creative Studio</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <Button 
                   onClick={() => setIsCreateOpen(true)}
-                  size="sm"
-                  className="rounded-lg bg-primary px-4 text-xs font-medium shadow-sm hover:shadow-md transition-all"
+                  size="lg"
+                  className="rounded-2xl bg-black hover:bg-black/90 text-white px-6 h-12 text-sm font-black shadow-2xl transition-all hover:-translate-y-1 active:translate-y-0"
                 >
-                  <Plus className="w-3.5 h-3.5 mr-1.5" />
-                  New Board
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Project
                 </Button>
                 <AccountNav />
               </div>

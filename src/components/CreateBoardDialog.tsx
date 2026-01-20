@@ -54,13 +54,13 @@ const templates = [
 export const CreateBoardDialog = ({ open, onOpenChange }: CreateBoardDialogProps) => {
   const [name, setName] = useState('');
   const [template, setTemplate] = useState<BoardTemplate>('blank');
-  const [color, setColor] = useState('#FF9AA2');
+  const [selectedColor, setSelectedColor] = useState('#FF9AA2');
   const { createBoard, openBoard } = usePalette();
   const navigate = useNavigate();
 
   const handleCreate = () => {
     if (name.trim()) {
-      const board = createBoard(name.trim(), template, color);
+      const board = createBoard(name.trim(), template, selectedColor);
       openBoard(board.id);
       setName('');
       setTemplate('blank');
@@ -77,47 +77,48 @@ export const CreateBoardDialog = ({ open, onOpenChange }: CreateBoardDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border-none shadow-2xl">
         <DialogHeader>
-          <DialogTitle>Create New Board</DialogTitle>
+          <DialogTitle className="text-2xl font-black tracking-tighter">Create New Board</DialogTitle>
         </DialogHeader>
         <div className="space-y-6 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="board-name">Board Name</Label>
+            <Label htmlFor="board-name" className="text-xs font-bold uppercase tracking-widest ml-1">Board Name</Label>
             <Input
               id="board-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="My Awesome Project"
+              placeholder="e.g. Q1 Marketing Plan"
+              className="h-12 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary/20 text-lg font-semibold"
               autoFocus
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="board-color">Board Color</Label>
-            <ColorPicker value={color} onChange={setColor} />
+            <Label className="text-xs font-bold uppercase tracking-widest ml-1">Board Color</Label>
+            <ColorPicker value={selectedColor} onChange={setSelectedColor} />
           </div>
 
           <div className="space-y-3">
-            <Label>Choose a Template</Label>
+            <Label className="text-xs font-bold uppercase tracking-widest ml-1">Choose a Template</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {templates.map((t) => (
                 <div
                   key={t.id}
                   onClick={() => setTemplate(t.id)}
                   className={cn(
-                    "relative flex flex-col p-4 rounded-xl border-2 transition-all cursor-pointer hover:shadow-md",
+                    "relative flex flex-col p-5 rounded-[2rem] border-2 transition-all cursor-pointer hover:shadow-lg group",
                     template === t.id 
-                      ? "border-primary bg-primary/5" 
-                      : "border-muted bg-card"
+                      ? "border-primary bg-primary/5 shadow-md" 
+                      : "border-border/50 bg-card hover:border-primary/20"
                   )}
                 >
-                  <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center mb-3", t.color)}>
+                  <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform", t.color)}>
                     <t.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-sm mb-1">{t.name}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <h3 className="font-bold text-base mb-1">{t.name}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                     {t.description}
                   </p>
                 </div>
@@ -125,12 +126,16 @@ export const CreateBoardDialog = ({ open, onOpenChange }: CreateBoardDialogProps
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="ghost" onClick={() => onOpenChange(false)} className="rounded-xl font-bold">
               Cancel
             </Button>
-            <Button onClick={handleCreate} disabled={!name.trim()}>
-              Create Board
+            <Button 
+              onClick={handleCreate} 
+              disabled={!name.trim()}
+              className="h-12 px-8 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/20 transition-all hover:-translate-y-0.5 active:translate-y-0"
+            >
+              Create Workspace
             </Button>
           </div>
         </div>
