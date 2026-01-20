@@ -49,7 +49,8 @@ export function useAuth() {
     };
     localStorage.setItem(MOCK_USER_KEY, JSON.stringify(mockUser));
     setUser(mockUser);
-    toast.success(`Logged in as ${email} (Demo Mode)`);
+    // Remove the delay or success toast if it blocks the UI transition
+    toast.success(`Welcome, ${email.split('@')[0]}!`);
   };
 
   const logout = async () => {
