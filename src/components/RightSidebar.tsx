@@ -221,30 +221,33 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
             </div>
           )}
 
-          <Separator className="my-6 opacity-50" />
-
-          {/* Pal AI Assistant Tab */}
+          {/* AI Assistant in Sidebar */}
           {!collapsed && (
-            <div className="mb-4">
-              <button 
-                className="w-full text-left p-3 rounded-2xl bg-black border border-border/50 hover:border-primary/30 transition-all group relative overflow-hidden"
-                onClick={() => navigate('/ai')}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative flex items-center justify-center w-8 h-8">
-                    <Sparkles className="h-5 w-5 text-[#FF6B6B] absolute -top-1 -left-1" />
-                    <Sparkles className="h-4 w-4 text-[#8A2BE2] absolute -bottom-1 -right-1" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-xs font-bold text-white truncate">Talk to Pal</span>
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center gap-2 px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                <Sparkles className="h-3 w-3 text-palette-purple" />
+                AI Assistant
+              </div>
+              <div className="px-1">
+                <button 
+                  className="w-full text-left p-3 rounded-2xl bg-gradient-to-br from-palette-purple/10 to-palette-red/10 border border-palette-purple/20 hover:border-palette-purple/40 transition-all group"
+                  onClick={() => navigate('/ai')}
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-6 h-6 rounded-lg bg-palette-purple flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <Sparkles className="h-3 w-3 text-white" />
                     </div>
-                    <p className="text-[9px] font-medium text-gray-400 uppercase tracking-tighter truncate">AI Assistant</p>
+                    <span className="text-xs font-bold text-foreground">Talk to Pal</span>
                   </div>
-                </div>
-              </button>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    Ready to organize your workflow with AI.
+                  </p>
+                </button>
+              </div>
             </div>
           )}
+
+          <Separator className="my-6 opacity-50" />
 
         </ScrollArea>
 
