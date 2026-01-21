@@ -28,31 +28,31 @@ const Dashboard = () => {
           
           {/* Header Section */}
           <AnimatedSection direction="down">
-            <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 sm:pb-8">
-              <div className="flex items-center gap-3 sm:gap-5">
+            <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 sm:pb-6">
+              <div className="flex items-center gap-3 sm:gap-4">
                 <div className="relative group shrink-0">
-                  <div className="absolute inset-0 bg-primary/20 rounded-2xl sm:rounded-[2rem] blur-xl sm:blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-primary/20 rounded-xl sm:rounded-2xl blur-lg sm:blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <img 
                     src={paletteLogo} 
                     alt="PALETTE" 
-                    className="relative h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-[1.5rem] object-cover shadow-xl sm:shadow-2xl border-2 sm:border-4 border-background transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
+                    className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl object-cover shadow-lg sm:shadow-xl border-2 border-background transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
                   />
                 </div>
                 <div>
-                  <h1 className="text-2xl sm:text-4xl font-black tracking-tighter text-gradient leading-none">PALETTE</h1>
-                  <p className="text-[10px] sm:text-sm font-bold text-muted-foreground mt-0.5 sm:mt-1 uppercase tracking-[0.2em] opacity-60">Creative Studio</p>
+                  <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-gradient leading-none">PALETTE</h1>
+                  <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground mt-0.5 uppercase tracking-[0.2em] opacity-60">Creative Studio</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <div className="flex items-center gap-1 sm:gap-2 p-1 rounded-2xl bg-muted/30 border border-border/40 w-full sm:w-auto">
                 <Button 
                   onClick={() => setIsCreateOpen(true)}
-                  size="default"
-                  className="flex-1 sm:flex-none rounded-xl sm:rounded-2xl bg-black hover:bg-black/90 text-white px-4 sm:px-6 h-10 sm:h-12 text-xs sm:text-sm font-black shadow-xl transition-all hover:-translate-y-1 active:translate-y-0"
+                  size="sm"
+                  className="flex-1 sm:flex-none rounded-xl bg-black hover:bg-black/90 text-white px-3 sm:px-4 h-8 sm:h-9 text-[10px] sm:text-xs font-black shadow-lg transition-all hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+                  <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
                   New Project
                 </Button>
-                <div className="shrink-0">
+                <div className="shrink-0 scale-90 sm:scale-100">
                   <AccountNav />
                 </div>
               </div>
