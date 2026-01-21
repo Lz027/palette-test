@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Board, Group, Column, Task, UserSettings, PaletteState, BoardTemplate } from '@/types/palette';
+import { Board, Group, Column, Task, UserSettings, PaletteState, BoardTemplate, ColumnType } from '@/types/palette';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -73,7 +73,21 @@ export const usePaletteStore = () => {
     let defaultColumns: Column[] = [];
     let defaultTasks: Task[] = [];
 
-    if (templateType === 'todo') {
+    if (templateType === 'blank') {
+      const groupId = crypto.randomUUID();
+      defaultGroups = [
+        { id: groupId, boardId, name: 'Tasks', color: '#64748b', position: 0 }
+      ];
+      defaultColumns = [
+        { id: crypto.randomUUID(), boardId, name: 'Status', position: 0, type: 'status' },
+      ];
+    } else if (templateType === 'kanban') {
+      defaultColumns = [
+        { id: crypto.randomUUID(), boardId, name: 'To Do', position: 0, type: 'status' },
+        { id: crypto.randomUUID(), boardId, name: 'In Progress', position: 1, type: 'status' },
+        { id: crypto.randomUUID(), boardId, name: 'Done', position: 2, type: 'status' },
+      ];
+    } else if (templateType === 'todo') {
       const groupId = crypto.randomUUID();
       defaultGroups = [
         { id: groupId, boardId, name: 'My Tasks', color: '#10B981', position: 0 }
@@ -90,7 +104,7 @@ export const usePaletteStore = () => {
       defaultColumns = [
         { id: crypto.randomUUID(), boardId, name: 'Feature', position: 0, type: 'text' },
         { id: crypto.randomUUID(), boardId, name: 'Dev Tool', position: 1, type: 'dev-tool' },
-        { id: crypto.randomUUID(), boardId, name: 'Course Link', position: 2, type: 'youtube-playlist' },
+        { id: crypto.randomUUID(), boardId, name: 'YouTube', position: 2, type: 'youtube-playlist' },
         { id: crypto.randomUUID(), boardId, name: 'Status', position: 3, type: 'status' },
       ];
     } else if (templateType === 'crm') {
@@ -116,7 +130,6 @@ export const usePaletteStore = () => {
         { id: crypto.randomUUID(), boardId, name: 'Relevant (Why?)', position: 3, type: 'checkbox' },
         { id: crypto.randomUUID(), boardId, name: 'Time-bound (When?)', position: 4, type: 'date' },
       ];
-      // Add a template task
       defaultTasks = [
         {
           id: crypto.randomUUID(),
@@ -142,16 +155,6 @@ export const usePaletteStore = () => {
           createdAt: new Date().toISOString(),
           status: 'Planning'
         }
-      ];
-    } else {
-      // Default Monday-style grouping for blank
-      const groupId = crypto.randomUUID();
-      defaultGroups = [
-        { id: groupId, boardId, name: 'Main Table', color: '#6A0DAD', position: 0 }
-      ];
-      defaultColumns = [
-        { id: crypto.randomUUID(), boardId, name: 'Status', position: 0, type: 'status' },
-        { id: crypto.randomUUID(), boardId, name: 'Due Date', position: 1, type: 'date' },
       ];
     }
 
@@ -231,6 +234,18 @@ export const usePaletteStore = () => {
   }, []);
 
   // Column operations
+  const createColumn = useCallback((boardId: string, name: string, type: ColumnType = 'text') => {
+    const newColumn: Column = {
+      id: crypto.randomUUID(),
+      boardId,
+      name,
+      position: state.columns.filter(c => c.boardId === boardId).length,
+      type,
+    };
+    setState(prev => ({ ...prev, columns: [...prev.columns, newColumn] }));
+    return newColumn;
+  }, [state.columns]);
+
   const updateColumn = useCallback((id: string, updates: Partial<Column>) => {
     setState(prev => ({
       ...prev,
@@ -257,8 +272,8 @@ export const usePaletteStore = () => {
       dueDate: null,
       tags: [],
       position: 0,
-      status: 'Pending',
       createdAt: new Date().toISOString(),
+      status: 'Pending',
     };
 
     setState(prev => {
@@ -372,6 +387,7 @@ export const usePaletteStore = () => {
     createGroup,
     updateGroup,
     deleteGroup,
+    createColumn,
     updateColumn,
     deleteColumn,
     createTask,
