@@ -1,4 +1,6 @@
-export type BoardTemplate = 'blank' | 'kanban' | 'crm' | 'smart';
+export type BoardTemplate = 'blank' | 'todo' | 'software' | 'crm' | 'smart';
+
+export type DevTool = 'canva' | 'manus' | 'kimi' | 'genspark' | 'poe' | 'lovable' | 'replit' | 'supabase' | 'github' | 'vercel' | 'youtube';
 
 export interface Board {
   id: string;
@@ -21,7 +23,7 @@ export interface Group {
   position: number;
 }
 
-export type ColumnType = 'text' | 'checkbox' | 'file' | 'link' | 'date' | 'tags' | 'number' | 'select' | 'status';
+export type ColumnType = 'text' | 'checkbox' | 'file' | 'link' | 'date' | 'tags' | 'number' | 'select' | 'status' | 'dev-tool' | 'youtube-playlist';
 
 export interface Column {
   id: string;
