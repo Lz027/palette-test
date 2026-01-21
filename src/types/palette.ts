@@ -1,4 +1,4 @@
-export type BoardTemplateType = 'blank' | 'todo' | 'softwaredev' | 'learning';
+export type BoardTemplateType = 'blank' | 'todo' | 'softwaredev' | 'learning' | 'smart_goal';
 
 export interface Board {
   id: string;
@@ -11,6 +11,14 @@ export interface Board {
   color: string;
   icon: string;
   description?: string;
+  smartGoal?: {
+    specific: string;
+    measurable: string;
+    attainable: string;
+    realistic: string;
+    timeBound: string;
+    deadline: string;
+  };
 }
 
 export interface Group {

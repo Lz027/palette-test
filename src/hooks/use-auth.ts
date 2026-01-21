@@ -1,67 +1,90 @@
 import { useState, useEffect } from 'react';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
-// Mock user type for demo purposes
-interface MockUser {
-  id: string;
-  email: string;
-  name: string;
-  avatar?: string;
-}
-
-const MOCK_USER_KEY = 'palette_mock_user';
-
 export function useAuth() {
-  const [user, setUser] = useState<MockUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  // Helper to get the correct redirect URL for Vercel and Localhost
+  const getRedirectUrl = () => {
+    let url = window.location.origin;
+    // Ensure no trailing slash
+    return url.endsWith('/') ? url.slice(0, -1) : url;
+  };
 
   useEffect(() => {
-    // Check for existing mock session
-    const stored = localStorage.getItem(MOCK_USER_KEY);
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch (e) {
-        localStorage.removeItem(MOCK_USER_KEY);
-      }
-    }
-    setIsLoading(false);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    }).catch(err => {
+      console.error("Auth session error:", err);
+      setError(err);
+      setIsLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const loginWithGithub = async () => {
-    // Mock GitHub login
-    const mockUser: MockUser = {
-      id: crypto.randomUUID(),
-      email: 'github-user@example.com',
-      name: 'GitHub User',
-    };
-    localStorage.setItem(MOCK_USER_KEY, JSON.stringify(mockUser));
-    setUser(mockUser);
-    toast.success('Logged in with GitHub (Demo Mode)');
+    try {
+      const redirectTo = getRedirectUrl();
+      console.log("GitHub Login Redirecting to:", redirectTo);
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const loginWithEmail = async (email: string) => {
-    // Mock email login - accepts any email
-    const mockUser: MockUser = {
-      id: crypto.randomUUID(),
-      email: email,
-      name: email.split('@')[0],
-    };
-    localStorage.setItem(MOCK_USER_KEY, JSON.stringify(mockUser));
-    setUser(mockUser);
-    toast.success(`Logged in as ${email} (Demo Mode)`);
+    try {
+      const emailRedirectTo = getRedirectUrl();
+      console.log("Email Login Redirecting to:", emailRedirectTo);
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo,
+        },
+      });
+      if (error) throw error;
+      toast.success("Login link sent to your email!");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const logout = async () => {
-    localStorage.removeItem(MOCK_USER_KEY);
-    setUser(null);
-    toast.success('Logged out');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+      toast.success("Logged out successfully");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   return {
     user,
     isLoading,
-    error: null,
+    error,
     isAuthenticated: !!user,
     loginWithGithub,
     loginWithEmail,

@@ -4,16 +4,18 @@ import { BoardViewHeader } from '@/components/BoardViewHeader';
 import { InteractiveBoard } from '@/components/InteractiveBoard';
 import { AppLayout } from '@/components/AppLayout';
 import { useState, useEffect, useRef } from 'react';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Target, LayoutGrid } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { SmartGoalStudio } from '@/components/SmartGoalStudio';
 
 const BoardView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { boards, openBoard, createGroup } = usePalette();
   const [searchQuery, setSearchQuery] = useState('');
+  const [view, setView] = useState<'board' | 'smart'>('board');
   const contentRef = useRef<HTMLDivElement>(null);
 
   const board = boards.find(b => b.id === id);
@@ -53,7 +55,26 @@ const BoardView = () => {
         <main className="flex-1 overflow-hidden flex flex-col">
           {/* Sub-header */}
           <div className="px-4 py-3 border-b bg-muted/5 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Button 
+                variant={view === 'board' ? 'secondary' : 'ghost'} 
+                size="sm" 
+                className="h-8 text-xs rounded-xl gap-1.5" 
+                onClick={() => setView('board')}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                Board
+              </Button>
+              <Button 
+                variant={view === 'smart' ? 'secondary' : 'ghost'} 
+                size="sm" 
+                className="h-8 text-xs rounded-xl gap-1.5" 
+                onClick={() => setView('smart')}
+              >
+                <Target className="w-3.5 h-3.5" />
+                SMART Goal
+              </Button>
+              <div className="w-px h-4 bg-border/50 mx-1" />
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -82,12 +103,17 @@ const BoardView = () => {
           >
             <div className="max-w-[1400px] mx-auto h-full">
               <motion.div
+                key={view}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.15 }}
                 className="h-full"
               >
-                <InteractiveBoard board={board} />
+                {view === 'board' ? (
+                  <InteractiveBoard board={board} />
+                ) : (
+                  <SmartGoalStudio boardId={board.id} />
+                )}
               </motion.div>
             </div>
           </div>
