@@ -22,18 +22,18 @@ interface CreateBoardDialogProps {
 
 const templates = [
   {
-    id: 'blank',
-    name: 'Blank',
-    description: 'Start with a clean slate. Custom columns for any project.',
+    id: 'todo',
+    name: 'To Do List',
+    description: 'A simple, clean list to track your daily tasks.',
     icon: LayoutGrid,
-    color: 'bg-slate-500',
+    color: 'bg-emerald-500',
   },
   {
-    id: 'kanban',
-    name: 'Kanban',
-    description: 'Optimized for flow. To Do, In Progress, and Done views.',
+    id: 'software',
+    name: 'Software Dev',
+    description: 'Integrated with your favorite dev tools and links.',
     icon: Kanban,
-    color: 'bg-indigo-500',
+    color: 'bg-blue-500',
   },
   {
     id: 'crm',

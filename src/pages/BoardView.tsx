@@ -71,15 +71,7 @@ const BoardView = () => {
                 <TabsList className="bg-muted/50 p-0.5 h-7">
                   <TabsTrigger value="palette" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
                     <TableIcon className="w-3 h-3 mr-1" />
-                    Table
-                  </TabsTrigger>
-                  <TabsTrigger value="kanban" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
-                    <LayoutGrid className="w-3 h-3 mr-1" />
-                    Kanban
-                  </TabsTrigger>
-                  <TabsTrigger value="table" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
-                    <List className="w-3 h-3 mr-1" />
-                    List
+                    Board
                   </TabsTrigger>
                 </TabsList>
               </Tabs>

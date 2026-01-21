@@ -66,18 +66,32 @@ export const usePaletteStore = () => {
       createdAt: new Date().toISOString(),
       templateType,
       color,
-      icon: templateType === 'kanban' ? 'kanban' : templateType === 'crm' ? 'users' : templateType === 'smart' ? 'file-text' : 'layout-grid',
+      icon: templateType === 'software' ? 'code' : templateType === 'todo' ? 'check-square' : templateType === 'crm' ? 'users' : templateType === 'smart' ? 'file-text' : 'layout-grid',
     };
 
     let defaultGroups: Group[] = [];
     let defaultColumns: Column[] = [];
     let defaultTasks: Task[] = [];
 
-    if (templateType === 'kanban') {
+    if (templateType === 'todo') {
+      const groupId = crypto.randomUUID();
+      defaultGroups = [
+        { id: groupId, boardId, name: 'My Tasks', color: '#10B981', position: 0 }
+      ];
       defaultColumns = [
-        { id: crypto.randomUUID(), boardId, name: 'To Do', position: 0, type: 'status' },
-        { id: crypto.randomUUID(), boardId, name: 'In Progress', position: 1, type: 'status' },
-        { id: crypto.randomUUID(), boardId, name: 'Done', position: 2, type: 'status' },
+        { id: crypto.randomUUID(), boardId, name: 'Task', position: 0, type: 'text' },
+        { id: crypto.randomUUID(), boardId, name: 'Status', position: 1, type: 'status' },
+      ];
+    } else if (templateType === 'software') {
+      const groupId = crypto.randomUUID();
+      defaultGroups = [
+        { id: groupId, boardId, name: 'Development', color: '#3B82F6', position: 0 }
+      ];
+      defaultColumns = [
+        { id: crypto.randomUUID(), boardId, name: 'Feature', position: 0, type: 'text' },
+        { id: crypto.randomUUID(), boardId, name: 'Dev Tool', position: 1, type: 'dev-tool' },
+        { id: crypto.randomUUID(), boardId, name: 'Course Link', position: 2, type: 'youtube-playlist' },
+        { id: crypto.randomUUID(), boardId, name: 'Status', position: 3, type: 'status' },
       ];
     } else if (templateType === 'crm') {
       const groupId = crypto.randomUUID();
