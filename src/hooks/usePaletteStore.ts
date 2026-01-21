@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Board, Group, Column, Task, UserSettings, PaletteState } from '@/types/palette';
+import { Board, Group, Column, Task, UserSettings, PaletteState, BoardTemplateType } from '@/types/palette';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -55,8 +55,16 @@ export const usePaletteStore = () => {
   }, [state]);
 
   // Board operations
-  const createBoard = useCallback((name: string, templateType: 'blank' | 'kanban' | 'crm' = 'blank', color: string = '#FF9AA2'): Board => {
+  const createBoard = useCallback((name: string, templateType: BoardTemplateType = 'blank', color: string = '#FF9AA2'): Board => {
     const boardId = crypto.randomUUID();
+    
+    const iconMap: Record<BoardTemplateType, string> = {
+      blank: 'layout-grid',
+      todo: 'check-square',
+      softwaredev: 'code',
+      learning: 'book-open',
+    };
+
     const newBoard: Board = {
       id: boardId,
       name,
@@ -66,29 +74,62 @@ export const usePaletteStore = () => {
       createdAt: new Date().toISOString(),
       templateType,
       color,
-      icon: templateType === 'kanban' ? 'kanban' : templateType === 'crm' ? 'users' : 'layout-grid',
+      icon: iconMap[templateType],
     };
 
     let defaultGroups: Group[] = [];
     let defaultColumns: Column[] = [];
     let defaultTasks: Task[] = [];
 
-    if (templateType === 'kanban') {
-      defaultColumns = [
-        { id: crypto.randomUUID(), boardId, name: 'To Do', position: 0, type: 'status' },
-        { id: crypto.randomUUID(), boardId, name: 'In Progress', position: 1, type: 'status' },
-        { id: crypto.randomUUID(), boardId, name: 'Done', position: 2, type: 'status' },
-      ];
-    } else {
-      // Default Monday-style grouping for blank/crm
-      const groupId = crypto.randomUUID();
-      defaultGroups = [
-        { id: groupId, boardId, name: 'Main Table', color: '#6A0DAD', position: 0 }
-      ];
-      defaultColumns = [
-        { id: crypto.randomUUID(), boardId, name: 'Status', position: 0, type: 'status' },
-        { id: crypto.randomUUID(), boardId, name: 'Due Date', position: 1, type: 'date' },
-      ];
+    const groupId = crypto.randomUUID();
+    
+    switch (templateType) {
+      case 'todo':
+        defaultGroups = [
+          { id: groupId, boardId, name: 'Tasks', color: '#10B981', position: 0 }
+        ];
+        defaultColumns = [
+          { id: crypto.randomUUID(), boardId, name: 'Status', position: 0, type: 'status', settings: { options: ['Pending', 'In Progress', 'Done'] } },
+          { id: crypto.randomUUID(), boardId, name: 'Priority', position: 1, type: 'priority', settings: { options: ['Low', 'Medium', 'High', 'Urgent'] } },
+          { id: crypto.randomUUID(), boardId, name: 'Due Date', position: 2, type: 'date' },
+          { id: crypto.randomUUID(), boardId, name: 'YouTube', position: 3, type: 'youtube' },
+        ];
+        break;
+        
+      case 'softwaredev':
+        defaultGroups = [
+          { id: groupId, boardId, name: 'Development', color: '#6366F1', position: 0 }
+        ];
+        defaultColumns = [
+          { id: crypto.randomUUID(), boardId, name: 'Status', position: 0, type: 'status', settings: { options: ['Backlog', 'In Progress', 'Review', 'Done'] } },
+          { id: crypto.randomUUID(), boardId, name: 'Tool', position: 1, type: 'tool' },
+          { id: crypto.randomUUID(), boardId, name: 'Priority', position: 2, type: 'priority' },
+          { id: crypto.randomUUID(), boardId, name: 'Due Date', position: 3, type: 'date' },
+          { id: crypto.randomUUID(), boardId, name: 'YouTube', position: 4, type: 'youtube' },
+          { id: crypto.randomUUID(), boardId, name: 'Link', position: 5, type: 'link' },
+        ];
+        break;
+        
+      case 'learning':
+        defaultGroups = [
+          { id: groupId, boardId, name: 'Courses', color: '#F59E0B', position: 0 }
+        ];
+        defaultColumns = [
+          { id: crypto.randomUUID(), boardId, name: 'Status', position: 0, type: 'status', settings: { options: ['Not Started', 'Learning', 'Completed'] } },
+          { id: crypto.randomUUID(), boardId, name: 'YouTube', position: 1, type: 'youtube' },
+          { id: crypto.randomUUID(), boardId, name: 'Progress', position: 2, type: 'number' },
+          { id: crypto.randomUUID(), boardId, name: 'Notes', position: 3, type: 'text' },
+        ];
+        break;
+        
+      default: // blank
+        defaultGroups = [
+          { id: groupId, boardId, name: 'Main Table', color: '#6A0DAD', position: 0 }
+        ];
+        defaultColumns = [
+          { id: crypto.randomUUID(), boardId, name: 'Status', position: 0, type: 'status' },
+          { id: crypto.randomUUID(), boardId, name: 'Due Date', position: 1, type: 'date' },
+        ];
     }
 
     setState(prev => ({
@@ -167,6 +208,19 @@ export const usePaletteStore = () => {
   }, []);
 
   // Column operations
+  const createColumn = useCallback((boardId: string, name: string, type: Column['type'] = 'text', settings?: Record<string, any>) => {
+    const newColumn: Column = {
+      id: crypto.randomUUID(),
+      boardId,
+      name,
+      position: state.columns.filter(c => c.boardId === boardId).length,
+      type,
+      settings,
+    };
+    setState(prev => ({ ...prev, columns: [...prev.columns, newColumn] }));
+    return newColumn;
+  }, [state.columns]);
+
   const updateColumn = useCallback((id: string, updates: Partial<Column>) => {
     setState(prev => ({
       ...prev,
@@ -308,6 +362,7 @@ export const usePaletteStore = () => {
     createGroup,
     updateGroup,
     deleteGroup,
+    createColumn,
     updateColumn,
     deleteColumn,
     createTask,
