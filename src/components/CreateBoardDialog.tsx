@@ -1,16 +1,25 @@
 import { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { usePalette } from '@/contexts/PaletteContext';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Kanban, Users, FileText } from 'lucide-react';
+import { 
+  LayoutGrid, 
+  Kanban, 
+  Users, 
+  Terminal, 
+  Box, 
+  ListTodo, 
+  Brain,
+  Sparkles
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ColorPicker } from '@/components/ColorPicker';
 import { BoardTemplate } from '@/types/palette';
@@ -23,14 +32,14 @@ interface CreateBoardDialogProps {
 const templates = [
   {
     id: 'blank',
-    name: 'Blank',
+    name: 'Blank Board',
     description: 'Start with a clean slate. Custom columns for any project.',
-    icon: LayoutGrid,
+    icon: Box,
     color: 'bg-slate-500',
   },
   {
     id: 'kanban',
-    name: 'Kanban',
+    name: 'Kanban Board',
     description: 'Optimized for flow. To Do, In Progress, and Done views.',
     icon: Kanban,
     color: 'bg-indigo-500',
@@ -39,14 +48,14 @@ const templates = [
     id: 'todo',
     name: 'To Do List',
     description: 'A simple, clean list to track your daily tasks.',
-    icon: LayoutGrid,
+    icon: ListTodo,
     color: 'bg-emerald-500',
   },
   {
     id: 'software',
-    name: 'Software Development Project',
+    name: 'Software Development',
     description: 'Integrated with your favorite dev tools and links.',
-    icon: Kanban,
+    icon: Terminal,
     color: 'bg-blue-500',
   },
   {
@@ -60,7 +69,7 @@ const templates = [
     id: 'smart',
     name: 'SMART Memo',
     description: 'Write down and track your Specific, Measurable goals.',
-    icon: FileText,
+    icon: Brain,
     color: 'bg-amber-500',
   },
 ] as const;
