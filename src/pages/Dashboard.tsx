@@ -39,7 +39,7 @@ const Dashboard = () => {
                   />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-black tracking-tighter text-foreground leading-none">PALETTE</h1>
+                  <h1 className="text-4xl font-black tracking-tighter text-gradient leading-none">PALETTE</h1>
                   <p className="text-sm font-bold text-muted-foreground mt-1 uppercase tracking-[0.2em] opacity-60">Creative Studio</p>
                 </div>
               </div>
