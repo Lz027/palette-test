@@ -73,6 +73,10 @@ const BoardView = () => {
                     <TableIcon className="w-3 h-3 mr-1" />
                     Board
                   </TabsTrigger>
+                  <TabsTrigger value="kanban" className="data-[state=active]:bg-background h-6 text-[10px] px-2">
+                    <LayoutGrid className="w-3 h-3 mr-1" />
+                    Kanban
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
               <div className="h-4 w-px bg-border mx-1" />

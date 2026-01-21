@@ -22,6 +22,20 @@ interface CreateBoardDialogProps {
 
 const templates = [
   {
+    id: 'blank',
+    name: 'Blank',
+    description: 'Start with a clean slate. Custom columns for any project.',
+    icon: LayoutGrid,
+    color: 'bg-slate-500',
+  },
+  {
+    id: 'kanban',
+    name: 'Kanban',
+    description: 'Optimized for flow. To Do, In Progress, and Done views.',
+    icon: Kanban,
+    color: 'bg-indigo-500',
+  },
+  {
     id: 'todo',
     name: 'To Do List',
     description: 'A simple, clean list to track your daily tasks.',

@@ -1,4 +1,4 @@
-export type BoardTemplate = 'blank' | 'todo' | 'software' | 'crm' | 'smart';
+export type BoardTemplate = 'blank' | 'todo' | 'software' | 'crm' | 'smart' | 'kanban';
 
 export type DevTool = 'canva' | 'manus' | 'kimi' | 'genspark' | 'poe' | 'lovable' | 'replit' | 'supabase' | 'github' | 'vercel' | 'youtube';
 
