@@ -30,6 +30,23 @@ interface RightSidebarProps {
   onToggle?: () => void;
 }
 
+const QUICK_TIPS = [
+  "S.M.A.R.T. Framework: Specific, Measurable, Achievable, Relevant, and Time-bound.",
+  "Specific: Define your goal clearly with no ambiguous language.",
+  "Measurable: Establish concrete criteria for measuring progress.",
+  "Achievable: Ensure your goal is realistic and attainable.",
+  "Relevant: Align your goal with your broader objectives.",
+  "Time-bound: Set a clear deadline to create urgency.",
+  "Software Development Project: Use 'Dev Tool' columns to link directly to Canva, GitHub, or Replit.",
+  "To Do List: Keep it simple! Focus on high-priority tasks first.",
+  "CRM: Track your leads through custom status columns like 'Discovery' or 'Negotiation'.",
+  "Palette View: Use the Board tab for a powerful, grid-based editing experience.",
+  "Groups: Use Groups to categorize tasks by project phase or priority.",
+  "Naming Tip: Clear, action-oriented task names help you stay productive.",
+  "AI Assistant: Ask Pal to help you structure your project or break down complex tasks.",
+  "Pinned Boards: Pin your most active projects for quick access from the dashboard."
+];
+
 export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,6 +54,9 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
   const [boardsExpanded, setBoardsExpanded] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  
+  // Get a random tip each time the component mounts/refreshes
+  const [randomTip] = useState(() => QUICK_TIPS[Math.floor(Math.random() * QUICK_TIPS.length)]);
   
   const activeBoards = getActiveBoards();
   const filteredBoards = activeBoards.filter(b => 
@@ -248,18 +268,11 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
               <div className="px-2 py-3 mt-4 rounded-xl bg-muted/30 border border-border/50">
                 <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-2">
                   <Sparkles className="w-3 h-3 text-amber-500" />
-                  Quick Tips
+                  Quick Tip
                 </h4>
-                <ul className="space-y-2">
-                  <li className="text-[10px] text-muted-foreground leading-tight flex gap-2">
-                    <div className="w-1 h-1 rounded-full bg-primary mt-1 shrink-0" />
-                    Use 'Palette' view for a powerful Excel-like experience.
-                  </li>
-                  <li className="text-[10px] text-muted-foreground leading-tight flex gap-2">
-                    <div className="w-1 h-1 rounded-full bg-primary mt-1 shrink-0" />
-                    SMART Memos help you stay focused on specific goals.
-                  </li>
-                </ul>
+                <p className="text-[10px] text-muted-foreground leading-tight">
+                  {randomTip}
+                </p>
               </div>
             </div>
           )}

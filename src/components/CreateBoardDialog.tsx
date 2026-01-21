@@ -44,7 +44,7 @@ const templates = [
   },
   {
     id: 'software',
-    name: 'Software Dev',
+    name: 'Software Development Project',
     description: 'Integrated with your favorite dev tools and links.',
     icon: Kanban,
     color: 'bg-blue-500',
