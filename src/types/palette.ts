@@ -1,3 +1,5 @@
+export type BoardTemplateType = 'blank' | 'todo' | 'softwaredev' | 'learning';
+
 export interface Board {
   id: string;
   name: string;
@@ -5,7 +7,7 @@ export interface Board {
   pinned: boolean;
   archived: boolean;
   createdAt: string;
-  templateType: 'blank' | 'kanban' | 'crm';
+  templateType: BoardTemplateType;
   color: string;
   icon: string;
   description?: string;
@@ -19,7 +21,7 @@ export interface Group {
   position: number;
 }
 
-export type ColumnType = 'text' | 'checkbox' | 'file' | 'link' | 'date' | 'tags' | 'number' | 'select' | 'status';
+export type ColumnType = 'text' | 'checkbox' | 'file' | 'link' | 'date' | 'tags' | 'number' | 'select' | 'status' | 'tool' | 'youtube' | 'priority';
 
 export interface Column {
   id: string;
