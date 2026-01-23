@@ -4,11 +4,12 @@ import { BoardViewHeader } from '@/components/BoardViewHeader';
 import { InteractiveBoard } from '@/components/InteractiveBoard';
 import { AppLayout } from '@/components/AppLayout';
 import { useState, useEffect, useRef } from 'react';
-import { Search, Plus, Target, LayoutGrid } from 'lucide-react';
+import { Search, Plus, Target, LayoutGrid, Wrench } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SmartGoalStudio } from '@/components/SmartGoalStudio';
+import { ToolPanel } from '@/components/tools/ToolPanel';
 
 const BoardView = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,7 @@ const BoardView = () => {
   const { boards, openBoard, createGroup } = usePalette();
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<'board' | 'smart'>('board');
+  const [toolPanelOpen, setToolPanelOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const board = boards.find(b => b.id === id);
@@ -86,14 +88,25 @@ const BoardView = () => {
               </Button>
             </div>
 
-            <div className="relative w-48">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input 
-                placeholder="Search..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-8 text-xs bg-background rounded-xl"
-              />
+            <div className="flex items-center gap-2">
+              <Button
+                variant={toolPanelOpen ? 'secondary' : 'outline'}
+                size="sm"
+                className="h-8 text-xs rounded-xl gap-1.5"
+                onClick={() => setToolPanelOpen(!toolPanelOpen)}
+              >
+                <Wrench className="w-3.5 h-3.5" />
+                Tools
+              </Button>
+              <div className="relative w-48">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input 
+                  placeholder="Search..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8 h-8 text-xs bg-background rounded-xl"
+                />
+              </div>
             </div>
           </div>
 
@@ -118,6 +131,14 @@ const BoardView = () => {
             </div>
           </div>
         </main>
+
+        {/* Tool Panel */}
+        <ToolPanel
+          templateType={board.templateType}
+          boardId={board.id}
+          isOpen={toolPanelOpen}
+          onToggle={() => setToolPanelOpen(!toolPanelOpen)}
+        />
       </div>
     </AppLayout>
   );

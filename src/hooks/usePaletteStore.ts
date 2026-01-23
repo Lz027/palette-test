@@ -63,6 +63,7 @@ export const usePaletteStore = () => {
       todo: 'check-square',
       softwaredev: 'code',
       learning: 'book-open',
+      smart_goal: 'target',
     };
 
     const newBoard: Board = {
