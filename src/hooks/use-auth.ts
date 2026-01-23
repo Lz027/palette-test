@@ -3,82 +3,53 @@ import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
+// Mock user for bypass
+const MOCK_USER: User = {
+  id: 'mock-user-id',
+  email: 'test@example.com',
+  app_metadata: {},
+  user_metadata: { full_name: 'Test User' },
+  aud: 'authenticated',
+  created_at: new Date().toISOString(),
+};
+
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Set user to MOCK_USER by default to bypass login
+  const [user, setUser] = useState<User | null>(MOCK_USER);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Helper to get the correct redirect URL for Vercel and Localhost
   const getRedirectUrl = () => {
     let url = window.location.origin;
-    // Ensure no trailing slash
     return url.endsWith('/') ? url.slice(0, -1) : url;
   };
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    }).catch(err => {
-      console.error("Auth session error:", err);
-      setError(err);
-      setIsLoading(false);
-    });
-
-    // Listen for auth changes
+    // We keep the listener but don't let it block the mock user
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setIsLoading(false);
+      if (session?.user) {
+        setUser(session.user);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const loginWithGithub = async () => {
-    try {
-      const redirectTo = getRedirectUrl();
-      console.log("GitHub Login Redirecting to:", redirectTo);
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-          redirectTo,
-        },
-      });
-      if (error) throw error;
-    } catch (err: any) {
-      toast.error(err.message);
-    }
+    // For bypass, we just set the mock user
+    setUser(MOCK_USER);
+    toast.success("Bypassed login with GitHub");
   };
 
   const loginWithEmail = async (email: string) => {
-    try {
-      const emailRedirectTo = getRedirectUrl();
-      console.log("Email Login Redirecting to:", emailRedirectTo);
-
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo,
-        },
-      });
-      if (error) throw error;
-      toast.success("Login link sent to your email!");
-    } catch (err: any) {
-      toast.error(err.message);
-    }
+    // For bypass, we just set the mock user
+    setUser(MOCK_USER);
+    toast.success("Bypassed login with Email");
   };
 
   const logout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      setUser(null);
-      toast.success("Logged out successfully");
-    } catch (err: any) {
-      toast.error(err.message);
-    }
+    setUser(null);
+    toast.success("Logged out successfully");
   };
 
   return {
