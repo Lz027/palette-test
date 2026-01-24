@@ -47,7 +47,7 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
   const isBoardActive = (id: string) => location.pathname === `/board/${id}`;
 
   const navItems = [
-    { icon: Home, label: 'Dashboard', path: '/' },
+    { icon: Home, label: 'Home', path: '/' },
     { icon: Settings, label: 'Settings', path: '/settings' },
     { icon: User, label: 'Profile', path: '/profile' },
   ];

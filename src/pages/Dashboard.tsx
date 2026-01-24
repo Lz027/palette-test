@@ -163,3 +163,6 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+// Rename reference for clarity
+export { Dashboard as Home };
