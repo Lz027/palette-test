@@ -56,8 +56,8 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
     <>
       <aside 
         className={cn(
-          "fixed right-0 top-0 h-full bg-card border-l border-border/50 z-40 transition-all duration-300 flex flex-col",
-          collapsed ? "w-16" : "w-72"
+          "fixed right-0 top-0 h-full bg-card/80 backdrop-blur-xl border-l border-border/50 z-40 transition-all duration-500 flex flex-col",
+          collapsed ? "w-0 sm:w-16 opacity-0 sm:opacity-100 overflow-hidden" : "w-full sm:w-72"
         )}
       >
         {/* Header */}
@@ -79,10 +79,13 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-8 w-8 shrink-0"
+              className={cn(
+                "h-12 w-12 sm:h-8 sm:w-8 shrink-0 rounded-xl",
+                collapsed ? "sm:mx-auto" : "self-end"
+              )}
               onClick={onToggle}
             >
-              {collapsed ? <PanelRight className="h-4 w-4" /> : <PanelRightClose className="h-4 w-4" />}
+              {collapsed ? <PanelRight className="h-6 w-6 sm:h-4 sm:w-4" /> : <PanelRightClose className="h-6 w-6 sm:h-4 sm:w-4" />}
             </Button>
           </div>
         </div>

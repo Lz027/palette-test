@@ -20,7 +20,10 @@ const Intro = () => {
 
   const handleComplete = () => {
     markIntroSeen();
-    navigate("/", { replace: true });
+    // Force a small delay or direct navigation to bypass any stuck states
+    setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 100);
   };
 
   const features = [
