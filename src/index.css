@@ -59,8 +59,24 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/20;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 overflow-x-hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Android/Mobile Button Improvements */
+  button, .button {
+    @apply touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+}
+
+.custom-scrollbar {
+  scroll-behavior: smooth;
+}
+
+@media (max-width: 640px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
 

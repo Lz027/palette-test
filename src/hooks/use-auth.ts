@@ -14,7 +14,7 @@ const MOCK_USER: User = {
 };
 
 export function useAuth() {
-  // Set user to MOCK_USER by default to bypass login
+  // Always authenticated with mock user
   const [user, setUser] = useState<User | null>(MOCK_USER);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
