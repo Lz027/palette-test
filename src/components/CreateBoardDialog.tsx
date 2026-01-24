@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { usePalette } from '@/contexts/PaletteContext';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, CheckSquare, Code, BookOpen } from 'lucide-react';
+import { LayoutGrid, CheckSquare, Code, BookOpen, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ColorPicker } from '@/components/ColorPicker';
 import { BoardTemplateType } from '@/types/palette';
