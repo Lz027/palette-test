@@ -14,42 +14,31 @@ const MOCK_USER: User = {
 };
 
 export function useAuth() {
-  // Always authenticated with mock user
-  const [user, setUser] = useState<User | null>(MOCK_USER);
+  // Pure local storage "auth"
+  const [user, setUser] = useState<any>(() => {
+    const saved = localStorage.getItem('palette_local_user');
+    return saved ? JSON.parse(saved) : MOCK_USER;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const getRedirectUrl = () => {
-    let url = window.location.origin;
-    return url.endsWith('/') ? url.slice(0, -1) : url;
-  };
-
-  useEffect(() => {
-    // We keep the listener but don't let it block the mock user
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   const loginWithGithub = async () => {
-    // For bypass, we just set the mock user
     setUser(MOCK_USER);
-    toast.success("Bypassed login with GitHub");
+    localStorage.setItem('palette_local_user', JSON.stringify(MOCK_USER));
+    toast.success("Welcome back!");
   };
 
   const loginWithEmail = async (email: string) => {
-    // For bypass, we just set the mock user
-    setUser(MOCK_USER);
-    toast.success("Bypassed login with Email");
+    const user = { ...MOCK_USER, email };
+    setUser(user);
+    localStorage.setItem('palette_local_user', JSON.stringify(user));
+    toast.success("Welcome back!");
   };
 
   const logout = async () => {
     setUser(null);
-    toast.success("Logged out successfully");
+    localStorage.removeItem('palette_local_user');
+    toast.success("Logged out");
   };
 
   return {

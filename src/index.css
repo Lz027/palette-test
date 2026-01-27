@@ -25,49 +25,42 @@
     --ring: 262 83% 58%;
     --radius: 1.5rem;
 
-    /* Palette Pastel Colors */
-    --palette-red: 355 100% 81%; /* #FF9AA2 */
-    --palette-purple: 275 80% 43%; /* #6A0DAD */
-    --palette-purple-light: 275 80% 60%;
-  }
-
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 263 70% 50%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 263 70% 50%;
+    /* Palette Vibrant Colors */
+    --palette-red: 355 100% 66%; /* Vibrant #ff5252 */
+    --palette-purple: 275 80% 55%; /* Vibrant #9c27b0 */
+    --palette-blue: 210 100% 50%; /* Vibrant #2196f3 */
+    --palette-pink: 330 100% 70%; /* Vibrant #ff4081 */
+    --palette-green: 142 70% 45%; /* Vibrant #4caf50 */
+    --palette-orange: 24 100% 50%; /* Vibrant #ff9800 */
+    --primary: 275 80% 55%;
+    --radius: 1.75rem;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20 overflow-x-hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
   }
-  
-  /* Android/Mobile Button Improvements */
-  button, .button {
-    @apply touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center;
-  }
+}
+
+/* Vibrant Gradients */
+.gradient-vibrant {
+  @apply bg-gradient-to-br from-palette-blue via-palette-purple to-palette-pink;
+}
+
+.card-vibrant {
+  @apply bg-card border-none shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] transition-all duration-300;
+}
+
+.card-vibrant:hover {
+  @apply shadow-[0_20px_40px_-10px_rgba(0,0,0,0.2)] -translate-y-1;
 }
 
 .custom-scrollbar {
