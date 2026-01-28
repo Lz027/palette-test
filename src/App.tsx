@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { PaletteProvider } from "./contexts/PaletteContext";
 import { useAuth } from "./hooks/use-auth";
 import Dashboard from "./pages/Dashboard";
+import { Login } from "./pages/Login";
 import BoardView from "./pages/BoardView";
 import AiTools from "./pages/AiTools";
 import Settings from "./pages/Settings";
@@ -39,11 +40,7 @@ const AppRoutes = () => {
   // If no user (and not bypassed), we could show a login screen, 
   // but with our bypass in use-auth.ts, user will be MOCK_USER.
   if (!user) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Please sign in to continue.</p>
-      </div>
-    );
+    return <Login />;
   }
 
   return (

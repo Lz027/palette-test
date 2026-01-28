@@ -4,35 +4,41 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 // Mock user for bypass
-const MOCK_USER: User = {
+const MOCK_USER: any = {
   id: 'mock-user-id',
   email: 'test@example.com',
-  app_metadata: {},
   user_metadata: { full_name: 'Test User' },
-  aud: 'authenticated',
-  created_at: new Date().toISOString(),
 };
 
 export function useAuth() {
   // Pure local storage "auth"
   const [user, setUser] = useState<any>(() => {
     const saved = localStorage.getItem('palette_local_user');
-    return saved ? JSON.parse(saved) : MOCK_USER;
+    return saved ? JSON.parse(saved) : null;
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const loginWithGithub = async () => {
-    setUser(MOCK_USER);
-    localStorage.setItem('palette_local_user', JSON.stringify(MOCK_USER));
-    toast.success("Welcome back!");
+    setIsLoading(true);
+    // Simulate network delay
+    setTimeout(() => {
+      setUser(MOCK_USER);
+      localStorage.setItem('palette_local_user', JSON.stringify(MOCK_USER));
+      setIsLoading(false);
+      toast.success("Welcome back!");
+    }, 1000);
   };
 
   const loginWithEmail = async (email: string) => {
-    const user = { ...MOCK_USER, email };
-    setUser(user);
-    localStorage.setItem('palette_local_user', JSON.stringify(user));
-    toast.success("Welcome back!");
+    setIsLoading(true);
+    setTimeout(() => {
+      const user = { ...MOCK_USER, email };
+      setUser(user);
+      localStorage.setItem('palette_local_user', JSON.stringify(user));
+      setIsLoading(false);
+      toast.success("Welcome back!");
+    }, 1000);
   };
 
   const logout = async () => {

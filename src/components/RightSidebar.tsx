@@ -206,10 +206,7 @@ export const RightSidebar = ({ collapsed = false, onToggle }: RightSidebarProps)
                     <span className="text-sm font-medium">Pal</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {hasAiKeys() 
-                      ? "Ready to help with your tasks" 
-                      : "Add API keys in settings to enable AI features"
-                    }
+                    Local storage active. Ready to help.
                   </p>
                 </div>
               </div>
